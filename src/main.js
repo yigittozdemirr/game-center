@@ -30,6 +30,7 @@ const DEFAULTS = {
   trayOnLaunch: true, // minimize to the tray when a game starts
   autostart: false, // start in the tray with Windows
   trayHintShown: false,
+  online: true, // download game info and artwork (Steam, Wikipedia, libretro); can be turned off in Settings
 };
 let config = { ...DEFAULTS, ...readJson(CFG_FILE, {}) };
 const store = readJson(LIB_FILE, { games: {} });
@@ -88,7 +89,7 @@ function view(g) {
     launching: !running.has(g.key) && (launching.get(g.key) || 0) > Date.now(),
     images: { hero: img('hero'), cover: img('cover'), logo: img('logo'), icon: img('icon') },
     colors: s.colors || null,
-    loading: !s.meta,
+    loading: !s.meta && config.online,
     customLaunch: c.launch || null,
     defaultLaunch: g.source === 'emu' ? g.rom : g.launch,
     customName: c.name || '',
@@ -129,6 +130,7 @@ async function enrich(g, force = false) {
       if (!ic.isEmpty()) { fs.writeFileSync(path.join(dir, 'icon.png'), ic.toPNG()); s.images.icon = path.join(dir, 'icon.png'); }
     } catch { /* no icon is fine */ }
   }
+  if (!config.online && !force) { recolor(s); s.rev = Date.now(); save(); push(g); return; } // offline mode: nothing sent automatically (user-initiated refetch still works)
   try {
     let meta = null;
     if (g.source === 'emu') {
@@ -422,6 +424,7 @@ ipcMain.handle('game:setLaunch', async (_e, key, reset) => {
 
 const newsCache = new Map(); // appId -> { at, items } (30 min)
 ipcMain.handle('steam:news', async (_e, appId) => {
+  if (!config.online) return [];
   if (!/^\d{1,10}$/.test(String(appId))) return [];
   const c = newsCache.get(appId);
   if (c && Date.now() - c.at < 30 * 60000) return c.items;
@@ -509,6 +512,7 @@ ipcMain.handle('config:set', (_e, c) => {
     trayOnLaunch: c.trayOnLaunch !== false,
     autostart: !!c.autostart,
     trayHintShown: config.trayHintShown,
+    online: c.online !== false,
   };
   if (next.shotKey !== config.shotKey && !registerShotKey(next.shotKey)) {
     registerShotKey(config.shotKey);
@@ -517,8 +521,10 @@ ipcMain.handle('config:set', (_e, c) => {
   const rescan = JSON.stringify([next.folders, next.off]) !== JSON.stringify([config.folders, config.off]);
   const langChanged = next.lang !== config.lang;
   const autostartChanged = next.autostart !== config.autostart;
+  const onlineTurnedOn = next.online && !config.online;
   config = next;
   writeJson(CFG_FILE, config);
+  if (onlineTurnedOn) enrichAll(scanned.filter((g) => needsFetch(entry(g.key)))); // turned back on: fetch what was skipped
   if (autostartChanged) applyAutostart(); // the startup entry is touched only when the user changes the setting
   lastTraySig = ''; // the menu language may have changed
   updateTray();

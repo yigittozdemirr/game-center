@@ -1,0 +1,44 @@
+﻿GameCenter - lisans ve gizlilik
+
+GİZLİLİK
+GameCenter bilgisayarında çalışır. Hesap, kullanım verisi toplama (telemetri) ya da kendine ait bir sunucu yoktur.
+
+Oyun bilgilerini ve görsellerini göstermek için kurulu oyunlarının adlarını (ve Steam numaralarını) şuralara gönderir:
+  - Steam mağazası (store.steampowered.com, api.steampowered.com, steamstatic.com),
+  - Vikipedi / Wikidata (Steam'de olmayan oyunlar için),
+  - libretro küçük resim arşivi (thumbnails.libretro.com, sadece emülatör kapakları).
+Seninle ya da bilgisayarınla ilgili başka hiçbir bilgi gönderilmez.
+
+Bunu istediğin zaman kapatabilirsin: Ayarlar > Genel > "Oyun bilgilerini ve görsellerini internetten indir". Kapalıyken GameCenter kendiliğinden hiçbir şey göndermez; oyunlar kendi ikonlarıyla gösterilir.
+
+Microsoft / Xbox Live'a sadece sen bir Xbox hesabı bağlarsan bağlanılır. Giriş belirteci bilgisayarında şifreli saklanır ve bağlantıyı kaldırınca silinir.
+
+KURULUMUN YAPTIĞI DEĞİŞİKLİKLER
+  - GameCenter'ı Windows kullanıcın için kurar (varsayılan: %LOCALAPPDATA%\Programs\GameCenter).
+  - Masaüstü ve Başlat menüsü kısayolları oluşturur.
+  - GameCenter'ı Ayarlar > Uygulamalar listesine ekler; istediğin zaman oradan kaldırabilirsin.
+  - "Windows ile başlat" sen Ayarlar'dan açmadıkça kapalıdır.
+Kütüphanen ve ayarların %APPDATA%\gamecenter, ekran görüntülerin Resimler\GameCenter klasöründe tutulur. Kaldırınca silinmezler.
+
+LİSANS (MIT, İngilizce asıl metin)
+MIT License
+
+Copyright (c) 2026 yigittozdemirr
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

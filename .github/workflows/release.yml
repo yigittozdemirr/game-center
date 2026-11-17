@@ -1,0 +1,89 @@
+# Builds the Windows installer on GitHub-hosted runners.
+# - Push a tag like v1.1.0 to build, (optionally) sign and publish a release.
+# - Run it manually (Actions > Release > Run workflow) to just build and download the installer.
+# Signing uses SignPath (free for open source). It switches on automatically once the
+# SIGNPATH_API_TOKEN secret and the SIGNPATH_* repository variables are set; until then builds are unsigned.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write # create the GitHub release
+  actions: read # SignPath reads the uploaded build artifact
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm test
+
+      - name: Check tag matches package.json version
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          v=$(node -p "require('./package.json').version")
+          [ "v$v" = "${GITHUB_REF_NAME}" ] || { echo "Tag ${GITHUB_REF_NAME} does not match package.json version $v"; exit 1; }
+
+      - name: Build installer
+        run: npx electron-builder --win nsis --publish never
+
+      - name: Upload unsigned installer
+        id: upload-unsigned
+        uses: actions/upload-artifact@v7
+        with:
+          name: GameCenter-Setup-unsigned
+          path: dist/GameCenter-Setup-*.exe
+          if-no-files-found: error
+
+      - name: Sign installer with SignPath
+        if: env.SIGNPATH_API_TOKEN != ''
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          github-artifact-id: ${{ steps.upload-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed
+
+      - name: Pick the file to publish
+        id: pick
+        shell: bash
+        run: |
+          if [ -d signed ] && ls signed/*.exe >/dev/null 2>&1; then f=$(ls signed/*.exe | head -1); else f=$(ls dist/GameCenter-Setup-*.exe | head -1); fi
+          echo "file=$f" >> "$GITHUB_OUTPUT"
+          echo "Publishing $f"
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v7
+        with:
+          name: GameCenter-Setup
+          path: ${{ steps.pick.outputs.file }}
+
+      - name: Publish GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "${{ steps.pick.outputs.file }}" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "${{ steps.pick.outputs.file }}" --title "GameCenter ${GITHUB_REF_NAME#v}" --generate-notes
+          fi

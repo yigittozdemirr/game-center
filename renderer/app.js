@@ -21,7 +21,7 @@ const L = {
     collections: 'Koleksiyonlar', addCollection: 'koleksiyon ekle', allCollections: 'Tüm koleksiyonlar',
     gridSize: 'Sıradaki oyun sayısı', perRow: 'Bir sırada {0} oyun',
     randomPick: 'Ne oynasam?', another: 'Başka', openPage: 'Oyun sayfası',
-    general: 'Genel', set_autostart: "Windows açılınca GameCenter'ı başlat (tepside)", set_closeToTray: 'Pencereyi kapatınca arka planda (tepside) çalışmaya devam et', set_trayOnLaunch: "Oyun başlayınca GameCenter'ı tepsiye küçült",
+    general: 'Genel', set_online: 'Oyun bilgilerini ve görsellerini internetten indir (Steam, Vikipedi, libretro: sadece oyun adları gönderilir)', set_autostart: "Windows açılınca GameCenter'ı başlat (tepside)", set_closeToTray: 'Pencereyi kapatınca arka planda (tepside) çalışmaya devam et', set_trayOnLaunch: "Oyun başlayınca GameCenter'ı tepsiye küçült",
     uninstall: 'Kaldır', confirmUninstall: '{0} kaldırılsın mı? {1} kaldırma ekranı açılacak.',
     un_steam: "Steam'in kaldırma penceresi açıldı.", un_xbox: "Windows Ayarlar açıldı: oyunun sayfasında Kaldır'a bas.",
     un_epic: "Epic Games açıldı. Kütüphane'de oyunun ••• menüsünden Kaldır'ı seç (Epic doğrudan kaldırma bağlantısı vermiyor).",
@@ -88,7 +88,7 @@ const L = {
     collections: 'Collections', addCollection: 'add collection', allCollections: 'All collections',
     gridSize: 'Games per row', perRow: '{0} games per row',
     randomPick: 'What should I play?', another: 'Another', openPage: 'Game page',
-    general: 'General', set_autostart: 'Start GameCenter with Windows (in the tray)', set_closeToTray: 'Keep running in the tray when the window is closed', set_trayOnLaunch: 'Minimize GameCenter to the tray when a game starts',
+    general: 'General', set_online: 'Download game info and artwork from the internet (Steam, Wikipedia, libretro: only game names are sent)', set_autostart: 'Start GameCenter with Windows (in the tray)', set_closeToTray: 'Keep running in the tray when the window is closed', set_trayOnLaunch: 'Minimize GameCenter to the tray when a game starts',
     uninstall: 'Uninstall', confirmUninstall: 'Uninstall {0}? The {1} uninstall screen will open.',
     un_steam: "Steam's uninstall window opened.", un_xbox: "Windows Settings opened: click Uninstall on the game's page.",
     un_epic: "Epic Games opened. In Library, pick Uninstall from the game's ••• menu (Epic offers no direct uninstall link).",
@@ -589,7 +589,7 @@ function renderSettings() {
     </section>
     <section>
       <h3>${t('general')}</h3>
-      ${[['autostart', false], ['closeToTray', true], ['trayOnLaunch', true]].map(([k, def]) => `<label class="check"><input type="checkbox" data-setting="${k}"${(cfg[k] ?? def) ? ' checked' : ''}> ${t('set_' + k)}</label>`).join('')}
+      ${[['online', true], ['autostart', false], ['closeToTray', true], ['trayOnLaunch', true]].map(([k, def]) => `<label class="check"><input type="checkbox" data-setting="${k}"${(cfg[k] ?? def) ? ' checked' : ''}> ${t('set_' + k)}</label>`).join('')}
     </section>
     <section>
       <h3>${t('shots')}</h3>

@@ -1,0 +1,44 @@
+﻿GameCenter - license and privacy
+
+PRIVACY
+GameCenter runs on your PC. It has no account, no telemetry and no server of its own.
+
+To show game info and artwork, it sends the names of your installed games (and Steam app IDs) to:
+  - the Steam store (store.steampowered.com, api.steampowered.com, steamstatic.com),
+  - Wikipedia / Wikidata (for games that aren't on Steam),
+  - the libretro thumbnail archive (thumbnails.libretro.com, emulator covers only).
+No other information about you or your PC is sent.
+
+You can turn this off at any time: Settings > General > "Download game info and artwork from the internet". When it's off, GameCenter sends nothing on its own; games are shown with their local icons.
+
+Microsoft / Xbox Live is contacted only if you connect an Xbox account yourself. Its sign-in token is stored encrypted on your PC and deleted when you disconnect.
+
+WHAT THE INSTALLER CHANGES
+  - Installs GameCenter for your Windows user (default: %LOCALAPPDATA%\Programs\GameCenter).
+  - Creates desktop and Start menu shortcuts.
+  - Adds GameCenter to Settings > Apps, where you can uninstall it at any time.
+  - "Start with Windows" is off unless you turn it on in Settings.
+Your library and settings are kept in %APPDATA%\gamecenter, screenshots in Pictures\GameCenter. Uninstalling keeps them.
+
+LICENSE
+MIT License
+
+Copyright (c) 2026 yigittozdemirr
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

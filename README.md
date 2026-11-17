@@ -58,7 +58,16 @@
 2. Run it. Windows may show a blue **"Windows protected your PC"** screen because the installer isn't code-signed yet: click **More info → Run anyway**.
 3. GameCenter finds your games on first launch. Nothing to configure.
 
-Requires Windows 10 or 11 (64-bit).
+Requires Windows 10 or 11 (64-bit). The installer opens in English, or in Turkish on Turkish Windows.
+
+## Uninstall
+
+GameCenter uninstalls like any other Windows app:
+- **Settings → Apps → Installed apps → GameCenter → ⋯ → Uninstall**, or
+- **Control Panel → Uninstall a program → GameCenter**, or
+- run `Uninstall GameCenter.exe` in the install folder (by default `%LOCALAPPDATA%\Programs\GameCenter`).
+
+This removes the app and its shortcuts. Your library, settings (`%APPDATA%\gamecenter`) and screenshots (`Pictures\GameCenter`) are kept, so reinstalling picks up where you left off. Delete those folders yourself to remove everything.
 
 ## Platforms
 
@@ -85,13 +94,18 @@ The ID isn't a secret: anyone can use the same ID to sign in to their own accoun
 
 ## Privacy
 
-GameCenter runs entirely on your PC. There's no account, no telemetry and no server of its own. It only talks to:
-- the Steam store (game info and images),
-- Wikipedia / Wikidata (info for games not on Steam),
-- the libretro thumbnail archive (emulator covers),
-- Microsoft / Xbox Live, only if you connect an Xbox account.
+GameCenter runs entirely on your PC. There's no account, no telemetry and no server of its own.
 
-Your library, settings and screenshots stay in `%APPDATA%\gamecenter` and your Pictures folder. Uninstalling doesn't delete them.
+To show game info and artwork, it sends the **names of your installed games** (and Steam app IDs) to:
+- the Steam store (`store.steampowered.com`, `api.steampowered.com`, `steamstatic.com`),
+- Wikipedia / Wikidata (for games that aren't on Steam),
+- the libretro thumbnail archive (`thumbnails.libretro.com`, emulator covers only).
+
+No other information about you or your PC is sent. You can switch this off any time in **Settings → General → Download game info and artwork from the internet**. When it's off, GameCenter sends nothing on its own and shows games with their local icons. The installer shows this notice before installing.
+
+Microsoft / Xbox Live is contacted only if you connect an Xbox account yourself. The sign-in token is stored encrypted on your PC and deleted when you disconnect.
+
+Your library, settings and screenshots stay in `%APPDATA%\gamecenter` and your Pictures folder.
 
 ## Build from source
 
@@ -101,8 +115,10 @@ cd game-center
 npm install
 npm start          # run in development
 npm test           # run the tests
-npm run dist       # build dist/GameCenter-Setup-<version>.exe
+npm run dist       # build dist/GameCenter-Setup-<version>.exe locally
 ```
+
+Releases are built by GitHub Actions: bump `version` in `package.json`, then push a matching tag (e.g. `git tag v1.1.0 && git push origin v1.1.0`).
 
 Built with [Electron](https://www.electronjs.org/), plain HTML/CSS/JS, no frameworks.
 
@@ -110,7 +126,25 @@ Built with [Electron](https://www.electronjs.org/), plain HTML/CSS/JS, no framew
 
 The installer ships Electron's original, unmodified executable renamed to `GameCenter.exe` (`signAndEditExecutable: false`, `asar: false` in `package.json`). When the build tool embedded the icon and version info into the exe, the file became "never seen before" and some antivirus products (e.g. Kaspersky) flagged it by behavior. Keeping the well-known original binary avoids that. Shortcuts and the Programs list get their icon from `resources/icon.ico`.
 
-Because of this, Task Manager lists the process as "Electron". That will change once the project is code-signed.
+Because of this, Task Manager lists the process as "Electron".
+
+## Code signing policy
+
+Windows installers are built from this repository's source by [GitHub Actions](.github/workflows/release.yml) on GitHub-hosted runners, and published on the [Releases](https://github.com/yigittozdemirr/game-center/releases) page.
+
+Code signing is being set up with [SignPath Foundation](https://signpath.org). Until the application is approved, releases are **unsigned**. Once approved, the line below applies to every release:
+
+> Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org)
+
+Only the GameCenter installer is signed. The bundled `GameCenter.exe` is Electron's original, unmodified upstream binary (see the antivirus note above).
+
+**Team roles**
+- Committers and reviewers: [yigittozdemirr](https://github.com/yigittozdemirr)
+- Approvers: [yigittozdemirr](https://github.com/yigittozdemirr)
+
+Every signing request is approved manually by an approver.
+
+**Privacy:** see [Privacy](#privacy). GameCenter sends only game names, and only to the services listed there. This can be turned off in Settings.
 
 ## License
 
