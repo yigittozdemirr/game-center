@@ -128,23 +128,11 @@ The installer ships Electron's original, unmodified executable renamed to `GameC
 
 Because of this, Task Manager lists the process as "Electron".
 
-## Code signing policy
+## Code signing
 
-Windows installers are built from this repository's source by [GitHub Actions](.github/workflows/release.yml) on GitHub-hosted runners, and published on the [Releases](https://github.com/yigittozdemirr/game-center/releases) page.
+Windows installers are built from this repository's source by [GitHub Actions](.github/workflows/release.yml) on GitHub-hosted runners and published on the [Releases](https://github.com/yigittozdemirr/game-center/releases) page.
 
-Code signing is being set up with [SignPath Foundation](https://signpath.org). Until the application is approved, releases are **unsigned**. Once approved, the line below applies to every release:
-
-> Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org)
-
-Only the GameCenter installer is signed. The bundled `GameCenter.exe` is Electron's original, unmodified upstream binary (see the antivirus note above).
-
-**Team roles**
-- Committers and reviewers: [yigittozdemirr](https://github.com/yigittozdemirr)
-- Approvers: [yigittozdemirr](https://github.com/yigittozdemirr)
-
-Every signing request is approved manually by an approver.
-
-**Privacy:** see [Privacy](#privacy). GameCenter sends only game names, and only to the services listed there. This can be turned off in Settings.
+Releases are **not code-signed**, so Windows may show **"Windows protected your PC"** the first time you run the installer. Click **More info → Run anyway**. The release workflow can sign installers later without other changes; see [docs/SIGNING.md](docs/SIGNING.md).
 
 ## License
 
