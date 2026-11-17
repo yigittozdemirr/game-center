@@ -1,0 +1,73 @@
+{
+  "name": "gamecenter",
+  "productName": "GameCenter",
+  "version": "1.0.0",
+  "description": "Windows game launcher that gathers Steam, Epic, Xbox, EA, Ubisoft, GOG and emulator games into one library",
+  "author": "yigittozdemirr",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test",
+    "dist": "electron-builder --win nsis"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.gamecenter.app",
+    "productName": "GameCenter",
+    "copyright": "Copyright © 2026 yigittozdemirr",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "renderer/**/*",
+      "build/icon.ico",
+      "build/icon.png",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": false,
+      "createStartMenuShortcut": false,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "artifactName": "GameCenter-Setup-${version}.exe",
+      "deleteAppDataOnUninstall": false,
+      "include": "build/installer.nsh",
+      "multiLanguageInstaller": true,
+      "installerLanguages": [
+        "en_US",
+        "tr_TR"
+      ],
+      "language": "1033",
+      "displayLanguageSelector": false
+    },
+    "extraResources": [
+      {
+        "from": "build/icon.ico",
+        "to": "icon.ico"
+      }
+    ],
+    "asar": false
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yigittozdemirr/game-center.git"
+  },
+  "homepage": "https://github.com/yigittozdemirr/game-center",
+  "bugs": {
+    "url": "https://github.com/yigittozdemirr/game-center/issues"
+  }
+}

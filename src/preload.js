@@ -1,0 +1,38 @@
+const { contextBridge, ipcRenderer } = require('electron');
+
+const call = (ch) => (...a) => ipcRenderer.invoke(ch, ...a);
+
+contextBridge.exposeInMainWorld('gc', {
+  getLibrary: call('library:get'),
+  scan: call('library:scan'),
+  launch: call('game:launch'),
+  update: call('game:update'),
+  refetch: call('game:refetch'),
+  setImage: call('game:setImage'),
+  setLaunch: call('game:setLaunch'),
+  uninstall: call('game:uninstall'),
+  searchSteam: call('steam:search'),
+  steamNews: call('steam:news'),
+  setSteamId: call('game:setSteamId'),
+  openFolder: call('game:openFolder'),
+  getConfig: call('config:get'),
+  setConfig: call('config:set'),
+  pickFolder: call('dialog:folder'),
+  listShots: call('shots:list'),
+  revealShot: call('shots:reveal'),
+  pickShotDir: call('shots:pickDir'),
+  deleteShot: call('shots:delete'),
+  copyShot: call('shots:copy'),
+  copyText: call('clipboard:text'),
+  getAccounts: call('accounts:get'),
+  connect: call('accounts:connect'),
+  disconnect: call('accounts:disconnect'),
+  syncAccounts: call('accounts:sync'),
+  pickEmuExe: call('emu:pickExe'),
+  saveEmu: call('emu:save'),
+  removeEmu: call('emu:remove'),
+  openEmu: call('emu:open'),
+  onUpdated: (fn) => ipcRenderer.on('game:updated', (_e, g) => fn(g)),
+  onChanged: (fn) => ipcRenderer.on('library:changed', (_e, list) => fn(list)),
+  onShot: (fn) => ipcRenderer.on('shots:new', () => fn()),
+});
