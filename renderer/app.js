@@ -14,7 +14,7 @@ const L = {
     prev: 'Önceki', next: 'Sonraki', playing: 'Şu an açık',
     total: 'Toplam oynama', twoWeeks: 'Son 2 hafta', lastPlayed: 'Son oynama', platform: 'Platform',
     fromSteam: 'Steam kaydı', measured: 'GameCenter açıkken ölçülür',
-    fromSteamPlus: 'Steam kaydı + başlatma yolundan ölçülen', news: 'Haberler ve güncellemeler', 'nav.stats': 'İstatistikler', totalPlay: 'Toplam oynama', last7: 'Son 7 gün', gamesCount: 'Oyun', emuGames: '+ {0} emülatör oyunu',
+    news: 'Haberler ve güncellemeler', 'nav.stats': 'İstatistikler', totalPlay: 'Toplam oynama', last7: 'Son 7 gün', gamesCount: 'Oyun', emuGames: '+ {0} emülatör oyunu',
     completedCount: 'Bitirilen', mostPlayed: 'En çok oynananlar', byPlatform: 'Platformlara göre', last14: 'Son 14 gün', noData: 'Henüz oynama verisi yok.',
     last14Hint: 'GameCenter açıkken ölçülen günlük oynama (Steam oyunları dahil).',
     status: 'Durum', st_playing: 'Oynuyorum', st_completed: 'Bitirdim', st_backlog: 'Sırada', st_dropped: 'Bıraktım', st_none: 'Durum yok', allStatuses: 'Tüm durumlar',
@@ -84,7 +84,7 @@ const L = {
     prev: 'Previous', next: 'Next', playing: 'Running now',
     total: 'Total playtime', twoWeeks: 'Last 2 weeks', lastPlayed: 'Last played', platform: 'Platform',
     fromSteam: 'Steam record', measured: 'Measured while GameCenter runs',
-    fromSteamPlus: 'Steam record + measured from launch path', news: 'News and updates', 'nav.stats': 'Statistics', totalPlay: 'Total playtime', last7: 'Last 7 days', gamesCount: 'Games', emuGames: '+ {0} emulator games',
+    news: 'News and updates', 'nav.stats': 'Statistics', totalPlay: 'Total playtime', last7: 'Last 7 days', gamesCount: 'Games', emuGames: '+ {0} emulator games',
     completedCount: 'Completed', mostPlayed: 'Most played', byPlatform: 'By platform', last14: 'Last 14 days', noData: 'No playtime data yet.',
     last14Hint: 'Daily playtime measured while GameCenter runs (Steam games included).',
     status: 'Status', st_playing: 'Playing', st_completed: 'Completed', st_backlog: 'Backlog', st_dropped: 'Dropped', st_none: 'No status', allStatuses: 'All statuses',
@@ -486,7 +486,7 @@ function renderDetail() {
   if (!g) { S.detail = null; return renderHome(); }
   setAmbient(g);
   const row = (k, v) => (v ? `<div class="row"><span>${t(k)}</span><b>${esc(v)}</b></div>` : '');
-  const how = { steam: t('fromSteam'), steamPlus: t('fromSteamPlus'), account: t('fromAccount'), tracked: t('measured') }[g.timeSource];
+  const how = { steam: t('fromSteam'), account: t('fromAccount'), tracked: t('measured') }[g.timeSource];
   const shots = (S.shots || []).find((x) => x.folder === g.shotFolder)?.files || [];
   view.innerHTML = `<div class="detail" style="${colorVars(g)}">
     <div class="d-hero">

@@ -1,7 +1,7 @@
 {
   "name": "gamecenter",
   "productName": "GameCenter",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Windows game launcher that gathers Steam, Epic, Xbox, EA, Ubisoft, GOG and emulator games into one library",
   "author": "yigittozdemirr",
   "main": "src/main.js",

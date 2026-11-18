@@ -79,13 +79,14 @@ function view(g) {
     hidden: !!s.hidden,
     status: s.status || '',
     collections: s.collections || [],
-    // playtime source: Steam file > connected account (Xbox) > GameCenter tracking
+    // playtime source: Steam file > connected account (Xbox) > GameCenter tracking.
+    // Steam games use Steam's numbers only: Steam counts them even when started from a custom launch path.
     lastPlayed: Math.max(s.lastPlayed || 0, g.lastPlayed || 0, ps?.lastPlayed || 0),
-    playtime: (g.playtime || 0) + (ps ? Math.max(ps.playtime, tracked) : tracked),
-    // for Steam's own games the last 2 weeks come from Steam (daily log is only for the chart, so it isn't counted twice)
-    playtime2wks: g.source === 'steam' && !c.launch ? g.playtime2wks || 0 : (g.playtime2wks || 0) + tracker.minutesSince(s.days, Date.now() - 13 * 864e5),
+    playtime: g.source === 'steam' ? g.playtime || 0 : ps ? Math.max(ps.playtime, tracked) : tracked,
+    // the daily log is only for the stats chart, so it isn't counted twice for Steam games
+    playtime2wks: g.source === 'steam' ? g.playtime2wks || 0 : tracker.minutesSince(s.days, Date.now() - 13 * 864e5),
     days: s.days || {},
-    timeSource: g.source === 'steam' ? (c.launch ? 'steamPlus' : 'steam') : ps ? 'account' : 'tracked',
+    timeSource: g.source === 'steam' ? 'steam' : ps ? 'account' : 'tracked',
     running: running.has(g.key),
     launching: !running.has(g.key) && (launching.get(g.key) || 0) > Date.now(),
     images: { hero: img('hero'), cover: img('cover'), logo: img('logo'), icon: img('icon') },
@@ -230,7 +231,7 @@ function tick(names) {
     launching.delete(key); // seen running: "Starting" -> "Playing"
     // a daily log is kept for every game (stats chart); for Steam games Steam keeps the total itself
     s.days = Object.fromEntries(Object.entries({ ...s.days, [day]: (s.days?.[day] || 0) + dt }).filter(([d]) => d >= tracker.dayOf(now - 30 * 864e5)));
-    if (g.source === 'steam' && !customLaunch(s)) continue;
+    if (g.source === 'steam') continue;
     s.tracked = (s.tracked || 0) + dt;
     s.lastPlayed = now;
   }
