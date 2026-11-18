@@ -237,12 +237,19 @@ function tick(names) {
   const expired = [...launching].filter(([, until]) => until < now).map(([k]) => k);
   expired.forEach((k) => launching.delete(k));
   const changed = new Set([...nowRunning, ...running, ...expired]);
+  // We hid the window for this game: bring it back once the game was seen running and has now closed.
+  // If it was never detected, don't pop up over a game that may still be running; the tray icon still opens it.
+  if (hiddenFor && running.has(hiddenFor) && !nowRunning.has(hiddenFor)) {
+    if (win && !win.isDestroyed() && !win.isVisible()) showWindow();
+    hiddenFor = null;
+  } else if (hiddenFor && expired.includes(hiddenFor)) hiddenFor = null;
   running = nowRunning;
   if (changed.size) { save(); scanned.filter((g) => changed.has(g.key)).forEach(push); }
   updateTray();
 }
 // After pressing Play, blocks a second launch until the process shows up (at most 90 s)
 const launching = new Map(); // key -> "starting" until this time
+let hiddenFor = null; // game the window was hidden to the tray for
 
 // Check running programs every 15 s (and a few seconds after a launch, so "Playing" shows up quickly)
 let tickBusy = false;
@@ -257,7 +264,9 @@ async function pollRunning() {
 }
 function startTracker() {
   pollRunning();
-  setInterval(pollRunning, 15000);
+  // every 15 s; every 5 s while the window is hidden for a game, so it comes back quickly when the game closes
+  let n = 0;
+  setInterval(() => { if (hiddenFor || ++n % 3 === 0) pollRunning(); }, 5000);
 }
 
 // ---------- accounts (Xbox) ----------
@@ -415,7 +424,7 @@ async function launchGame(key) {
   setTimeout(pollRunning, 3000);
   setTimeout(pollRunning, 8000);
   save();
-  if (config.trayOnLaunch && win && !win.isDestroyed()) win.hide(); // go to the tray when a game starts, leave the memory to the game
+  if (config.trayOnLaunch && win && !win.isDestroyed()) { win.hide(); hiddenFor = key; } // go to the tray when a game starts, leave the memory to the game
   updateTray();
   return view(g);
 }

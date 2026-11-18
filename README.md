@@ -43,7 +43,7 @@
 
 **Built for playing**
 - **Screenshots** with a hotkey (F10 by default, rebindable) and a soft shutter sound. Screenshots are sorted into one folder per game and can be browsed, copied and deleted inside the app.
-- Lives in the **system tray**: double-click to open, right-click to launch recent games. Optionally minimizes when a game starts and starts with Windows.
+- Lives in the **system tray**: double-click to open, right-click to launch recent games. Optionally minimizes when a game starts, comes back when you close the game, and starts with Windows.
 - **Uninstall** opens the right uninstaller: Steam, Xbox, EA, GOG or the game's own.
 - **Custom launch path** per game, for example a mod loader.
 - English and Turkish UI, and a theme color you choose.
