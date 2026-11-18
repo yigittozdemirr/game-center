@@ -103,6 +103,8 @@ To show game info and artwork, it sends the **names of your installed games** (a
 
 No other information about you or your PC is sent. You can switch this off any time in **Settings → General → Download game info and artwork from the internet**. When it's off, GameCenter sends nothing on its own and shows games with their local icons. The installer shows this notice before installing.
 
+GameCenter also asks GitHub (`api.github.com`) whether a newer version exists, at start and every 6 hours. When there is one, a small **Update** badge appears in the top bar; one click downloads the installer from this repository's Releases page, installs it and restarts the app. Turn the check off in **Settings → General → Check for new GameCenter versions**.
+
 Microsoft / Xbox Live is contacted only if you connect an Xbox account yourself. The sign-in token is stored encrypted on your PC and deleted when you disconnect.
 
 Your library, settings and screenshots stay in `%APPDATA%\gamecenter` and your Pictures folder.

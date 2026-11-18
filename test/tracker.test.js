@@ -49,3 +49,17 @@ test("last 2 weeks of playtime are summed from the daily log", () => {
   const days = { [dayOf(now)]: 30 * 60000, [dayOf(now - 3 * 864e5)]: 90 * 60000, '2000-01-01': 999 * 60000 };
   assert.equal(minutesSince(days, now - 13 * 864e5), 120);
 });
+
+test('launcher helpers shipped inside game folders are not treated as the game', () => {
+  const { isHelper } = require('../src/tracker');
+  for (const n of ['epicwebhelper.exe', 'steamwebhelper.exe', 'crashreportclient.exe', 'uninstallhelper-win64-shipping.exe', 'easyanticheat_eos_setup.exe']) assert.ok(isHelper(n), n);
+  for (const n of ['fortniteclient-win64-shipping.exe', 'bf1.exe', 'stardew valley.exe']) assert.ok(!isHelper(n), n);
+});
+
+test('update check compares versions numerically', () => {
+  const { isNewer } = require('../src/metadata');
+  assert.ok(isNewer('1.2.0', '1.1.0'));
+  assert.ok(isNewer('1.10.0', '1.9.2'));
+  assert.ok(!isNewer('1.1.0', '1.1.0'));
+  assert.ok(!isNewer('1.0.9', '1.1.0'));
+});

@@ -35,4 +35,8 @@ contextBridge.exposeInMainWorld('gc', {
   onUpdated: (fn) => ipcRenderer.on('game:updated', (_e, g) => fn(g)),
   onChanged: (fn) => ipcRenderer.on('library:changed', (_e, list) => fn(list)),
   onShot: (fn) => ipcRenderer.on('shots:new', () => fn()),
+  getUpdate: call('update:get'),
+  installUpdate: call('update:install'),
+  onUpdate: (fn) => ipcRenderer.on('update:available', (_e, u) => fn(u)),
+  onUpdateProgress: (fn) => ipcRenderer.on('update:progress', (_e, p) => fn(p)),
 });

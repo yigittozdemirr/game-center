@@ -11,6 +11,8 @@ No other information about you or your PC is sent.
 
 You can turn this off at any time: Settings > General > "Download game info and artwork from the internet". When it's off, GameCenter sends nothing on its own; games are shown with their local icons.
 
+GameCenter also asks GitHub (api.github.com) whether a newer GameCenter version exists, at start and every 6 hours. Only the request itself is sent; turn it off in Settings > General > "Check for new GameCenter versions".
+
 Microsoft / Xbox Live is contacted only if you connect an Xbox account yourself. Its sign-in token is stored encrypted on your PC and deleted when you disconnect.
 
 WHAT THE INSTALLER CHANGES

@@ -208,4 +208,12 @@ function palette(buf, width, height) {
   return { primary, secondary, average: avg };
 }
 
-module.exports = { WIKI_HEADERS, fetchSteamNews, findSteamId, searchSteam, fetchWikiDetails, fetchSteamDetails, fetchSteamImages, download, palette };
+// "1.10.0" > "1.9.2"
+function isNewer(a, b) {
+  const pa = String(a).split('.').map((x) => parseInt(x, 10) || 0);
+  const pb = String(b).split('.').map((x) => parseInt(x, 10) || 0);
+  for (let i = 0; i < 3; i++) if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) > (pb[i] || 0);
+  return false;
+}
+
+module.exports = { isNewer, WIKI_HEADERS, fetchSteamNews, findSteamId, searchSteam, fetchWikiDetails, fetchSteamDetails, fetchSteamImages, download, palette };

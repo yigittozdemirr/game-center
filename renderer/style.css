@@ -464,8 +464,6 @@ nav button, .nav-bottom > button { padding: 11px 14px; }
 .btn-play.playing, .btn-play.starting { cursor: default; translate: none; }
 .btn-play.playing { background: #1f8f4e !important; box-shadow: 0 10px 30px -10px #3ddc84 !important; color: #fff; }
 .btn-play.starting { background: rgba(255, 255, 255, .12) !important; box-shadow: none !important; animation: pulse 1.2s ease-in-out infinite; }
-.card-play.playing { opacity: 1; background: #1f8f4e; cursor: default; font-size: 10px; }
-.card-play.starting { opacity: 1; cursor: default; }
 
 /* ---------- game page: Steam news ---------- */
 .d-news { margin-top: 10px; }
@@ -537,3 +535,20 @@ nav button, .nav-bottom > button { padding: 11px 14px; }
 .cols-pick svg { fill: currentColor; }
 .grid[style*="--cols:8"] { gap: 12px; }
 .grid[style*="--cols:8"] .card-info b { font-size: 12.5px; }
+.card-play:disabled { cursor: not-allowed; color: rgba(255, 255, 255, .45); }
+.card-play:disabled:hover { background: rgba(0, 0, 0, .5); }
+
+/* ---------- update badge and dialog ---------- */
+.update-pill {
+  -webkit-app-region: no-drag; margin-left: auto; padding: 7px 12px; border-radius: 10px; font-size: 12.5px; font-weight: 600;
+  color: #fff; background: color-mix(in srgb, var(--accent) 85%, transparent); box-shadow: 0 6px 18px -6px var(--accent); animation: fade-in .3s ease;
+}
+.update-pill:hover { filter: brightness(1.12); }
+.update-pill[hidden] { display: none; }
+.update-pill:not([hidden]) + .lang { margin-left: 10px; }
+.update-box .notes { max-height: 240px; overflow-y: auto; margin: 10px 0; padding: 12px 14px; border-radius: 10px; background: var(--panel-2); font-size: 13px; line-height: 1.55; color: #c9c8d4; user-select: text; }
+.update-box .small { font-size: 12.5px; margin: 0; }
+.update-box .info-actions { gap: 8px; }
+.update-box .btn-play { background: var(--accent); }
+.progress { height: 6px; border-radius: 6px; background: var(--panel-2); overflow: hidden; margin: 8px 0; }
+.progress span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }

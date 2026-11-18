@@ -30,6 +30,7 @@ const DEFAULTS = {
   trayOnLaunch: true, // minimize to the tray when a game starts
   autostart: false, // start in the tray with Windows
   trayHintShown: false,
+  checkUpdates: true, // look for new GameCenter versions on GitHub
   online: true, // download game info and artwork (Steam, Wikipedia, libretro); can be turned off in Settings
 };
 let config = { ...DEFAULTS, ...readJson(CFG_FILE, {}) };
@@ -332,6 +333,62 @@ function listShots() {
 
 const insideShots = (p) => { const r = path.relative(shotRoot(), p); return r === '' || (!r.startsWith('..') && !path.isAbsolute(r)); };
 
+// ---------- updates (GitHub releases) ----------
+// Asks GitHub for the latest release; if it's newer, the UI offers to download the installer and
+// install it silently (the installer closes the old version and starts the new one).
+const REPO = 'yigittozdemirr/game-center';
+let update = null; // { version, notes, url, size }
+let updating = false;
+
+async function checkUpdate() {
+  if (!config.checkUpdates) return;
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
+      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'GameCenter' },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!r.ok) return;
+    const rel = await r.json();
+    const version = String(rel.tag_name || '').replace(/^v/, '');
+    const asset = (rel.assets || []).find((a) => /^GameCenter-Setup-[\d.]+\.exe$/.test(a.name));
+    // only installers published on this repository's release page
+    if (!asset || !String(asset.browser_download_url).startsWith(`https://github.com/${REPO}/releases/download/`)) return;
+    if (!md.isNewer(version, app.getVersion())) { update = null; return; }
+    update = { version, notes: String(rel.body || '').slice(0, 4000), url: asset.browser_download_url, size: asset.size };
+    win?.webContents.send('update:available', update);
+  } catch { /* offline or GitHub unreachable: try again later */ }
+}
+
+ipcMain.handle('update:get', () => update);
+ipcMain.handle('update:install', async () => {
+  if (!update) throw new Error('E_NOUPDATE');
+  if (updating) return;
+  updating = true;
+  try {
+    const file = path.join(app.getPath('temp'), `GameCenter-Setup-${update.version}.exe`);
+    const r = await fetch(update.url, { signal: AbortSignal.timeout(15 * 60000) });
+    if (!r.ok || !r.body) throw new Error('E_DOWNLOAD');
+    const total = +r.headers.get('content-length') || update.size || 0;
+    const out = fs.createWriteStream(file);
+    let got = 0;
+    let lastSent = 0;
+    for await (const chunk of r.body) {
+      got += chunk.length;
+      if (!out.write(chunk)) await new Promise((res) => out.once('drain', res));
+      if (total && Date.now() - lastSent > 200) { lastSent = Date.now(); win?.webContents.send('update:progress', got / total); }
+    }
+    await new Promise((res, rej) => out.end((e) => (e ? rej(e) : res())));
+    if (update.size && fs.statSync(file).size !== update.size) throw new Error('E_DOWNLOAD'); // incomplete download
+    win?.webContents.send('update:progress', 1);
+    // /S: silent, --updated: keep settings/shortcuts as an update, --force-run: start GameCenter again when done
+    spawn(file, ['/S', '--updated', '--force-run'], { detached: true, stdio: 'ignore' }).on('error', () => {}).unref();
+    setTimeout(quitApp, 500);
+  } catch (e) {
+    updating = false;
+    throw new Error(e.message === 'E_DOWNLOAD' ? 'E_DOWNLOAD' : 'E_UPDATE');
+  }
+});
+
 // ---------- IPC: library ----------
 ipcMain.handle('library:scan', () => scan());
 ipcMain.handle('library:get', () => (scanned.length ? scanned.map(view) : scan()));
@@ -497,7 +554,7 @@ ipcMain.handle('game:openFolder', (_e, key) => {
 });
 
 // ---------- IPC: settings ----------
-ipcMain.handle('config:get', () => ({ ...config, shotRoot: shotRoot(), systems: emus.SYSTEMS }));
+ipcMain.handle('config:get', () => ({ ...config, shotRoot: shotRoot(), systems: emus.SYSTEMS, appVersion: app.getVersion() }));
 ipcMain.handle('config:set', (_e, c) => {
   const SOURCES = ['steam', 'epic', 'xbox', 'ea', 'ubisoft', 'gog'];
   const next = {
@@ -513,6 +570,7 @@ ipcMain.handle('config:set', (_e, c) => {
     autostart: !!c.autostart,
     trayHintShown: config.trayHintShown,
     online: c.online !== false,
+    checkUpdates: c.checkUpdates !== false,
   };
   if (next.shotKey !== config.shotKey && !registerShotKey(next.shotKey)) {
     registerShotKey(config.shotKey);
@@ -738,6 +796,8 @@ app.whenReady().then(async () => {
   steamName = scanner.steamAccount(await scanner.findSteamPath());
   syncXbox();
   setInterval(syncXbox, 15 * 60000);
+  setTimeout(checkUpdate, 8000);
+  setInterval(checkUpdate, 6 * 3600000);
 });
 
 app.on('will-quit', () => globalShortcut.unregisterAll());

@@ -11,6 +11,8 @@ Seninle ya da bilgisayarınla ilgili başka hiçbir bilgi gönderilmez.
 
 Bunu istediğin zaman kapatabilirsin: Ayarlar > Genel > "Oyun bilgilerini ve görsellerini internetten indir". Kapalıyken GameCenter kendiliğinden hiçbir şey göndermez; oyunlar kendi ikonlarıyla gösterilir.
 
+GameCenter ayrıca açılışta ve 6 saatte bir GitHub'a (api.github.com) yeni bir GameCenter sürümü olup olmadığını sorar. Sadece bu istek gönderilir; Ayarlar > Genel > "Yeni GameCenter sürümlerini denetle" ile kapatabilirsin.
+
 Microsoft / Xbox Live'a sadece sen bir Xbox hesabı bağlarsan bağlanılır. Giriş belirteci bilgisayarında şifreli saklanır ve bağlantıyı kaldırınca silinir.
 
 KURULUMUN YAPTIĞI DEĞİŞİKLİKLER

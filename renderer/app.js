@@ -21,6 +21,9 @@ const L = {
     collections: 'Koleksiyonlar', addCollection: 'koleksiyon ekle', allCollections: 'Tüm koleksiyonlar',
     gridSize: 'Sıradaki oyun sayısı', perRow: 'Bir sırada {0} oyun',
     randomPick: 'Ne oynasam?', another: 'Başka', openPage: 'Oyun sayfası',
+    set_checkUpdates: "Yeni GameCenter sürümlerini denetle (GitHub)", updateBadge: 'Güncelleme: v{0}', updateTitle: 'GameCenter {0} hazır', updateCurrent: 'Şu an kullandığın sürüm: {0}',
+    updateHint: 'Güncelleme indirilir, kurulur ve GameCenter yeniden açılır. Kütüphanen ve ayarların korunur.', updateNow: 'Şimdi güncelle', later: 'Sonra', installing: 'Kuruluyor…',
+    E_UPDATE: 'Güncelleme kurulamadı', E_NOUPDATE: 'Yeni sürüm yok',
     general: 'Genel', set_online: 'Oyun bilgilerini ve görsellerini internetten indir (Steam, Vikipedi, libretro: sadece oyun adları gönderilir)', set_autostart: "Windows açılınca GameCenter'ı başlat (tepside)", set_closeToTray: 'Pencereyi kapatınca arka planda (tepside) çalışmaya devam et', set_trayOnLaunch: "Oyun başlayınca GameCenter'ı tepsiye küçült",
     uninstall: 'Kaldır', confirmUninstall: '{0} kaldırılsın mı? {1} kaldırma ekranı açılacak.',
     un_steam: "Steam'in kaldırma penceresi açıldı.", un_xbox: "Windows Ayarlar açıldı: oyunun sayfasında Kaldır'a bas.",
@@ -88,6 +91,9 @@ const L = {
     collections: 'Collections', addCollection: 'add collection', allCollections: 'All collections',
     gridSize: 'Games per row', perRow: '{0} games per row',
     randomPick: 'What should I play?', another: 'Another', openPage: 'Game page',
+    set_checkUpdates: 'Check for new GameCenter versions (GitHub)', updateBadge: 'Update: v{0}', updateTitle: 'GameCenter {0} is available', updateCurrent: 'You are on version {0}',
+    updateHint: 'The update is downloaded and installed, then GameCenter restarts. Your library and settings are kept.', updateNow: 'Update now', later: 'Later', installing: 'Installing…',
+    E_UPDATE: 'Could not install the update', E_NOUPDATE: 'No new version',
     general: 'General', set_online: 'Download game info and artwork from the internet (Steam, Wikipedia, libretro: only game names are sent)', set_autostart: 'Start GameCenter with Windows (in the tray)', set_closeToTray: 'Keep running in the tray when the window is closed', set_trayOnLaunch: 'Minimize GameCenter to the tray when a game starts',
     uninstall: 'Uninstall', confirmUninstall: 'Uninstall {0}? The {1} uninstall screen will open.',
     un_steam: "Steam's uninstall window opened.", un_xbox: "Windows Settings opened: click Uninstall on the game's page.",
@@ -405,6 +411,8 @@ function newsBlock(g) {
 
 // Play button: "Playing" while running, "Starting…" while launching (can't be launched twice)
 function playBtn(g, cls, label = t('play')) {
+  // on cards the usual ▶ stays, just disabled (the green dot at the top of the card already shows it's running)
+  if (cls === 'card-play' && (g.running || g.launching)) return `<button class="card-play" disabled title="${t(g.running ? 'playingNow' : 'launchingNow')}">${label}</button>`;
   if (g.running) return `<button class="${cls} playing" disabled title="${t('playingNow')}">${cls === 'card-play' ? '●' : `● ${t('playingNow')}`}</button>`;
   if (g.launching) return `<button class="${cls} starting" disabled title="${t('launchingNow')}">${cls === 'card-play' ? '…' : t('launchingNow')}</button>`;
   return `<button class="${cls}" data-play="${esc(g.key)}" title="${t('play')}">${label}</button>`;
@@ -589,7 +597,7 @@ function renderSettings() {
     </section>
     <section>
       <h3>${t('general')}</h3>
-      ${[['online', true], ['autostart', false], ['closeToTray', true], ['trayOnLaunch', true]].map(([k, def]) => `<label class="check"><input type="checkbox" data-setting="${k}"${(cfg[k] ?? def) ? ' checked' : ''}> ${t('set_' + k)}</label>`).join('')}
+      ${[['online', true], ['checkUpdates', true], ['autostart', false], ['closeToTray', true], ['trayOnLaunch', true]].map(([k, def]) => `<label class="check"><input type="checkbox" data-setting="${k}"${(cfg[k] ?? def) ? ' checked' : ''}> ${t('set_' + k)}</label>`).join('')}
     </section>
     <section>
       <h3>${t('shots')}</h3>
@@ -1085,6 +1093,61 @@ function shutterSound() {
   } catch { /* if sound can't play, stay silent */ }
 }
 gc.onShot(() => { shutterSound(); loadShots(); });
+// ---------- updates ----------
+// A new version on GitHub shows a small badge next to the language switch; clicking it opens the release notes
+// and an "Update now" button that downloads the installer and restarts GameCenter on the new version.
+let pendingUpdate = null;
+function showUpdate(u) {
+  pendingUpdate = u;
+  const pill = $('#update-pill');
+  pill.hidden = !u;
+  if (u) { pill.textContent = `⬆ ${t('updateBadge', u.version)}`; pill.title = t('updateTitle', u.version); }
+}
+// release notes are Markdown; show them as plain text
+const plainNotes = (md) => md.replace(/^#+\s*/gm, '').replace(/\*\*|__|`/g, '').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').trim();
+function updateModal() {
+  const u = pendingUpdate;
+  if (!u) return;
+  const d = document.createElement('div');
+  d.className = 'modal';
+  d.innerHTML = `<div class="info-box update-box">
+    <h3>${esc(t('updateTitle', u.version))}</h3>
+    <p class="muted">${esc(t('updateCurrent', S.appVersion || ''))}</p>
+    <div class="notes">${esc(plainNotes(u.notes)).replace(/\n/g, '<br>')}</div>
+    <div class="progress" hidden><span></span></div>
+    <p class="muted small">${esc(t('updateHint'))}</p>
+    <div class="info-actions"><button class="btn-glass" data-u="later">${t('later')}</button><button class="btn-play" data-u="install">${t('updateNow')}</button></div>
+  </div>`;
+  const close = () => { if (!d.dataset.busy) d.remove(); };
+  d.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (e.target === d) return close();
+    const b = e.target.closest('[data-u]');
+    if (!b) return;
+    if (b.dataset.u === 'later') return close();
+    d.dataset.busy = '1';
+    b.disabled = true;
+    b.textContent = t('downloading');
+    d.querySelector('.progress').hidden = false;
+    try {
+      await gc.installUpdate();
+      b.textContent = t('installing');
+    } catch (err) {
+      delete d.dataset.busy;
+      b.disabled = false;
+      b.textContent = t('updateNow');
+      toast(t(String(err.message).replace(/^Error invoking remote method '[^']+': (Error: )?/, '')), true);
+    }
+  });
+  document.body.append(d);
+}
+gc.onUpdate(showUpdate);
+gc.onUpdateProgress((p) => {
+  const bar = document.querySelector('.update-box .progress span');
+  if (bar) bar.style.width = `${Math.round(p * 100)}%`;
+});
+$('#update-pill').addEventListener('click', updateModal);
+
 gc.onChanged((list) => {
   const added = list.filter((g) => g.source !== 'emu' && !S.games.some((x) => x.key === g.key));
   S.games = list;
@@ -1111,4 +1174,6 @@ safe(async () => {
   render();
   restartRotation();
   loadShots(); // for the screenshot strip on game pages
+  S.appVersion = S.cfg.appVersion;
+  showUpdate(await gc.getUpdate());
 })();

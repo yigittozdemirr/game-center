@@ -26,6 +26,10 @@ const GENERIC = new Set([
   'ue4prereqsetup_x64.exe', 'ueprereqsetup_x64.exe', 'cefprocess.exe', 'qtwebengineprocess.exe', 'notification_helper.exe',
   'steamerrorreporter.exe', 'steamerrorreporter64.exe', 'oalinst.exe', 'physx.exe', 'touchup.exe', 'cleanup.exe',
 ]);
+// Launcher helpers copied into game folders run on their own while the launcher is open
+// (e.g. Fortnite ships EpicWebHelper.exe, which the Epic Games Launcher also runs), so they must not count.
+const HELPER = /webhelper|crashhandler|crashreport|crashpad|errorreporter|uninstall|unins\d|setup|redist|prereq|anticheat|battleye|beservice|launcherhelper/;
+const isHelper = (n) => GENERIC.has(n) || HELPER.test(n);
 
 // Exe names in a folder (lowercase), at most 4 levels and 20,000 entries; async so big games don't block the main thread
 async function listExes(dir, { depth = 4, max = 20000 } = {}) {
@@ -39,7 +43,7 @@ async function listExes(dir, { depth = 4, max = 20000 } = {}) {
       if (++seen > max) return;
       if (e.isDirectory()) { if (level < depth) await walk(path.join(d, e.name), level + 1); continue; }
       const n = e.name.toLowerCase();
-      if (n.endsWith('.exe') && !GENERIC.has(n)) out.add(n);
+      if (n.endsWith('.exe') && !isHelper(n)) out.add(n);
     }
   };
   await walk(dir, 0);
@@ -79,4 +83,4 @@ function minutesSince(days = {}, sinceMs) {
   return Math.round(Object.entries(days).filter(([d]) => d >= from).reduce((a, [, ms]) => a + ms, 0) / 60000);
 }
 
-module.exports = { safeDir, listExes, parseTasklist, runningExeNames, matchRunning, dayOf, minutesSince, GENERIC };
+module.exports = { safeDir, listExes, isHelper, parseTasklist, runningExeNames, matchRunning, dayOf, minutesSince, GENERIC };
