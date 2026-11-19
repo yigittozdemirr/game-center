@@ -153,7 +153,7 @@ function parseReg(text) {
 }
 
 async function regExport(key) {
-  const file = path.join(os.tmpdir(), `gamecenter-${process.pid}-${Math.random().toString(36).slice(2)}.reg`);
+  const file = path.join(os.tmpdir(), `ludora-${process.pid}-${Math.random().toString(36).slice(2)}.reg`);
   try {
     await run('reg', ['export', key, file, '/y']);
     return parseReg(fs.readFileSync(file).toString('utf16le'));

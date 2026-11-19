@@ -1,7 +1,7 @@
-﻿GameCenter - license and privacy
+﻿Ludora - license and privacy
 
 PRIVACY
-GameCenter runs on your PC. It has no account, no telemetry and no server of its own.
+Ludora runs on your PC. It has no account, no telemetry and no server of its own.
 
 To show game info and artwork, it sends the names of your installed games (and Steam app IDs) to:
   - the Steam store (store.steampowered.com, api.steampowered.com, steamstatic.com),
@@ -9,18 +9,20 @@ To show game info and artwork, it sends the names of your installed games (and S
   - the libretro thumbnail archive (thumbnails.libretro.com, emulator covers only).
 No other information about you or your PC is sent.
 
-You can turn this off at any time: Settings > General > "Download game info and artwork from the internet". When it's off, GameCenter sends nothing on its own; games are shown with their local icons.
+You can turn this off at any time: Settings > General > "Download game info and artwork from the internet". When it's off, Ludora sends nothing on its own; games are shown with their local icons.
 
-GameCenter also asks GitHub (api.github.com) whether a newer GameCenter version exists, at start and every 6 hours. Only the request itself is sent; turn it off in Settings > General > "Check for new GameCenter versions".
+Ludora also asks GitHub (api.github.com) whether a newer Ludora version exists, at start and every 6 hours. Only the request itself is sent; turn it off in Settings > General > "Check for new Ludora versions".
+
+The phone remote is off until you turn it on in Settings. When it's on, Ludora runs a small web server on your home network (port 47800) that only devices with the QR code's pairing code can use. Nothing goes through the internet.
 
 Microsoft / Xbox Live is contacted only if you connect an Xbox account yourself. Its sign-in token is stored encrypted on your PC and deleted when you disconnect.
 
 WHAT THE INSTALLER CHANGES
-  - Installs GameCenter for your Windows user (default: %LOCALAPPDATA%\Programs\GameCenter).
+  - Installs Ludora for your Windows user (default: %LOCALAPPDATA%\Programs\Ludora).
   - Creates desktop and Start menu shortcuts.
-  - Adds GameCenter to Settings > Apps, where you can uninstall it at any time.
+  - Adds Ludora to Settings > Apps, where you can uninstall it at any time.
   - "Start with Windows" is off unless you turn it on in Settings.
-Your library and settings are kept in %APPDATA%\gamecenter, screenshots in Pictures\GameCenter. Uninstalling keeps them.
+Your library and settings are kept in %APPDATA%\Ludora, screenshots in Pictures\Ludora. Uninstalling keeps them.
 
 LICENSE
 MIT License

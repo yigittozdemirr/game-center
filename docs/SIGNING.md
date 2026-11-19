@@ -15,12 +15,12 @@ What you must do yourself: enable **two-factor authentication** on GitHub and on
 ## 2. After approval, in SignPath
 
 1. Add the predefined **GitHub.com** trusted build system and link it to the project.
-2. Create an **artifact configuration**. The workflow uploads a ZIP containing `GameCenter-Setup-<version>.exe`. Only the installer is signed; the bundled `GameCenter.exe` is Electron's unmodified upstream binary. For example:
+2. Create an **artifact configuration**. The workflow uploads a ZIP containing `Ludora-Setup-<version>.exe`. Only the installer is signed; the bundled `Ludora.exe` is Electron's unmodified upstream binary. For example:
 
    ```xml
    <artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
      <zip-file>
-       <pe-file path="GameCenter-Setup-*.exe" product-name="GameCenter">
+       <pe-file path="Ludora-Setup-*.exe" product-name="Ludora">
          <authenticode-sign/>
        </pe-file>
      </zip-file>

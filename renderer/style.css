@@ -79,7 +79,7 @@ main { flex: 1; display: flex; flex-direction: column; min-width: 0; position: r
 .icon-btn:hover { background: rgba(255, 255, 255, .12); }
 .icon-btn:active svg { rotate: 180deg; transition: rotate .3s; }
 
-#view { flex: 1; overflow-y: auto; padding: 4px 34px 40px 0; scroll-behavior: auto; }
+#view { flex: 1; overflow-y: auto; padding: 4px 34px 40px 0; scroll-behavior: auto; scrollbar-gutter: stable; } /* keep room for the scrollbar: a lifted card on a short page must not make the grid jump */
 #view::-webkit-scrollbar { width: 10px; }
 #view::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .1); border-radius: 10px; border: 3px solid transparent; background-clip: padding-box; }
 
@@ -552,3 +552,11 @@ nav button, .nav-bottom > button { padding: 11px 14px; }
 .update-box .btn-play { background: var(--accent); }
 .progress { height: 6px; border-radius: 6px; background: var(--panel-2); overflow: hidden; margin: 8px 0; }
 .progress span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+
+/* phone remote (Settings) */
+.remote { display: flex; gap: 24px; align-items: flex-start; margin-top: 14px; }
+.remote .qr { flex: 0 0 196px; padding: 6px; background: #fff; border-radius: 14px; line-height: 0; }
+.remote .qr svg { width: 100%; height: auto; }
+.remote-info p { margin: 0 0 10px; line-height: 1.5; }
+.remote-info code { user-select: all; }
+.remote-err { color: #ff8a8a; margin: 8px 0 0; }

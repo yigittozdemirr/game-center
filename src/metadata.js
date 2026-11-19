@@ -7,7 +7,7 @@ const STORE = 'https://store.steampowered.com';
 const CDN = 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps';
 
 // Wikimedia asks clients to identify themselves (no personal data)
-const WIKI_HEADERS = { 'User-Agent': 'GameCenter/1.0 (Windows desktop game launcher)', 'Api-User-Agent': 'GameCenter/1.0 (Windows desktop game launcher)' };
+const WIKI_HEADERS = { 'User-Agent': 'Ludora/1.0 (Windows desktop game launcher)', 'Api-User-Agent': 'Ludora/1.0 (Windows desktop game launcher)' };
 
 async function getJson(url, headers) {
   const r = await fetch(url, { headers, signal: AbortSignal.timeout(15000) });

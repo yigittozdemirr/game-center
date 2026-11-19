@@ -1,7 +1,7 @@
 {
-  "name": "gamecenter",
-  "productName": "GameCenter",
-  "version": "1.3.1",
+  "name": "ludora",
+  "productName": "Ludora",
+  "version": "1.4.0",
   "description": "Windows game launcher that gathers Steam, Epic, Xbox, EA, Ubisoft, GOG and emulator games into one library",
   "author": "yigittozdemirr",
   "main": "src/main.js",
@@ -17,7 +17,7 @@
   },
   "build": {
     "appId": "com.gamecenter.app",
-    "productName": "GameCenter",
+    "productName": "Ludora",
     "copyright": "Copyright © 2026 yigittozdemirr",
     "directories": {
       "output": "dist",
@@ -43,7 +43,7 @@
       "createStartMenuShortcut": false,
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
-      "artifactName": "GameCenter-Setup-${version}.exe",
+      "artifactName": "Ludora-Setup-${version}.exe",
       "deleteAppDataOnUninstall": false,
       "include": "build/installer.nsh",
       "multiLanguageInstaller": true,
@@ -69,5 +69,8 @@
   "homepage": "https://github.com/yigittozdemirr/game-center",
   "bugs": {
     "url": "https://github.com/yigittozdemirr/game-center/issues"
+  },
+  "dependencies": {
+    "qrcode-generator": "2.0.4"
   }
 }

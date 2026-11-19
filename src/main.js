@@ -8,7 +8,22 @@ const md = require('./metadata');
 const tracker = require('./tracker');
 const emus = require('./emulators');
 const accounts = require('./accounts');
+const remote = require('./remote');
+const migrate = require('./migrate');
+const qrcode = require('qrcode-generator');
+const os = require('os');
 
+// The app used to be called GameCenter: bring its library, settings and screenshots along once.
+// If a folder is in use, keep using the old one this time and try again on the next start.
+function moveOld(from, to) {
+  try { if (fs.existsSync(from) && !fs.existsSync(to)) fs.renameSync(from, to); } catch { return from; }
+  return to;
+}
+if (!app.isPackaged && process.env.LUDORA_DATA_DIR) app.setPath('userData', process.env.LUDORA_DATA_DIR); // dev/test runs on a copy, never on the real library
+const OLD_DATA = path.join(app.getPath('appData'), 'gamecenter');
+const fromGameCenter = migrate.copyData(OLD_DATA, app.getPath('userData')); // first start after the rename
+// copy failed: use the old data this time instead of starting with an empty library, and try again next start
+if (!fs.existsSync(path.join(app.getPath('userData'), 'library.json')) && fs.existsSync(path.join(OLD_DATA, 'library.json'))) app.setPath('userData', OLD_DATA);
 const DATA = app.getPath('userData');
 const CFG_FILE = path.join(DATA, 'config.json');
 const LIB_FILE = path.join(DATA, 'library.json');
@@ -30,8 +45,10 @@ const DEFAULTS = {
   trayOnLaunch: true, // minimize to the tray when a game starts
   autostart: false, // start in the tray with Windows
   trayHintShown: false,
-  checkUpdates: true, // look for new GameCenter versions on GitHub
+  checkUpdates: true, // look for new Ludora versions on GitHub
   online: true, // download game info and artwork (Steam, Wikipedia, libretro); can be turned off in Settings
+  remote: false, // phone remote: web server on the home network (off until the user turns it on)
+  remoteToken: '', // pairing secret in the QR code; a new one disconnects paired phones
 };
 let config = { ...DEFAULTS, ...readJson(CFG_FILE, {}) };
 const store = readJson(LIB_FILE, { games: {} });
@@ -45,18 +62,18 @@ const entry = (key) => (store.games[key] ||= { custom: {}, images: {} });
 const find = (key) => { const g = scanned.find((x) => x.key === key); if (!g) throw new Error('E_NOTFOUND'); return g; };
 const dirOf = (key) => path.join(CACHE, key.replace(/[^\w.-]/g, '_'));
 const customLaunch = (s) => (s.custom.launch && fs.existsSync(s.custom.launch) ? s.custom.launch : null);
-const shotRoot = () => config.shotDir || path.join(app.getPath('pictures'), 'GameCenter');
+const SHOTS = config.shotDir ? '' : moveOld(path.join(app.getPath('pictures'), 'GameCenter'), path.join(app.getPath('pictures'), 'Ludora'));
+const shotRoot = () => config.shotDir || SHOTS || path.join(app.getPath('pictures'), 'Ludora');
 const safeName = (s) => String(s).replace(/[<>:"/\\|?*\x00-\x1f™®©]/g, '').replace(/\s+/g, ' ').trim().slice(0, 80) || 'Desktop';
+
+const imgPath = (s, k) => { const p = s.custom?.images?.[k] || s.images?.[k]; return p && fs.existsSync(p) ? p : null; };
 
 function view(g) {
   const s = entry(g.key);
   const m = s.meta || {};
   const c = s.custom || {};
   const ps = store.platformStats[g.key];
-  const img = (k) => {
-    const p = c.images?.[k] || s.images?.[k];
-    return p && fs.existsSync(p) ? `${pathToFileURL(p).href}?v=${s.rev || 0}` : null;
-  };
+  const img = (k) => { const p = imgPath(s, k); return p ? `${pathToFileURL(p).href}?v=${s.rev || 0}` : null; };
   const tracked = Math.round((s.tracked || 0) / 60000);
   const name = c.name || g.name;
   return {
@@ -79,7 +96,7 @@ function view(g) {
     hidden: !!s.hidden,
     status: s.status || '',
     collections: s.collections || [],
-    // playtime source: Steam file > connected account (Xbox) > GameCenter tracking.
+    // playtime source: Steam file > connected account (Xbox) > Ludora tracking.
     // Steam games use Steam's numbers only: Steam counts them even when started from a custom launch path.
     lastPlayed: Math.max(s.lastPlayed || 0, g.lastPlayed || 0, ps?.lastPlayed || 0),
     playtime: g.source === 'steam' ? g.playtime || 0 : ps ? Math.max(ps.playtime, tracked) : tracked,
@@ -343,10 +360,97 @@ function listShots() {
 
 const insideShots = (p) => { const r = path.relative(shotRoot(), p); return r === '' || (!r.startsWith('..') && !path.isAbsolute(r)); };
 
+// ---------- phone remote ----------
+// The phone gets a slim library (no file paths) and images through the server, and can start games here.
+let remoteServer = null;
+let remotePort = null;
+let remoteError = null;
+
+const remoteApi = {
+  token: () => config.remoteToken,
+  library: () => ({
+    pc: os.hostname(),
+    lang: config.lang,
+    accent: config.accent,
+    version: app.getVersion(),
+    games: scanned.map(phoneView),
+    emulators: config.emulators.map((e) => ({ id: e.id, name: e.name, system: e.system || '' })),
+    online: config.online,
+  }),
+  launch: async (key) => { await launchGame(key); const g = find(key); push(g); return phoneView(g); },
+  // the phone may only change these; names, images and launch paths stay PC-only
+  update: (key, p) => {
+    const patch = {};
+    for (const k of ['favorite', 'hidden', 'status']) if (k in p) patch[k] = p[k];
+    updateGame(key, patch);
+    const g = find(key);
+    push(g);
+    return phoneView(g);
+  },
+  news: (key) => steamNews(view(find(key)).steamAppId),
+  imagePath: (key, kind) => (['hero', 'cover', 'logo', 'icon'].includes(kind) && store.games[key] ? imgPath(store.games[key], kind) : null),
+  shots: () => listShots().map((d) => ({ folder: d.folder, files: d.files.slice(0, 60).map((f) => ({ id: path.relative(shotRoot(), f.path), t: f.t })) })),
+  shotPath: (id) => {
+    const p = path.join(shotRoot(), String(id || ''));
+    return /\.(png|jpe?g)$/i.test(p) && insideShots(p) && fs.existsSync(p) ? p : null;
+  },
+};
+
+function phoneView(g) {
+  const v = view(g);
+  const rev = entry(g.key).rev || 0;
+  const images = Object.fromEntries(Object.entries(v.images).filter(([, u]) => u).map(([k]) => [k, `/api/img?key=${encodeURIComponent(g.key)}&kind=${k}&v=${rev}`]));
+  const pick = ['key', 'name', 'source', 'emuId', 'emuName', 'genres', 'developer', 'publisher', 'releaseDate', 'playtime', 'playtime2wks', 'lastPlayed', 'favorite', 'hidden', 'status', 'collections', 'running', 'launching', 'colors', 'days', 'timeSource', 'steamAppId'];
+  return { ...Object.fromEntries(pick.map((k) => [k, v[k]])), description: v.description.slice(0, 700), images };
+}
+
+function remoteInfo() {
+  const ips = remote.lanAddresses();
+  const urls = remotePort ? ips.map((ip) => `http://${ip}:${remotePort}/#t=${config.remoteToken}`) : [];
+  let qr = '';
+  if (urls[0]) { const q = qrcode(0, 'M'); q.addData(urls[0]); q.make(); qr = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); }
+  return { on: !!remoteServer, port: remotePort, urls, qr, error: remoteError || (remoteServer && !ips.length ? 'E_NONETWORK' : null) };
+}
+
+async function startRemote() {
+  if (remoteServer) return;
+  if (!config.remoteToken) { config.remoteToken = remote.newToken(); writeJson(CFG_FILE, config); }
+  const server = remote.createServer(remoteApi);
+  try {
+    remotePort = await remote.listen(server);
+    remoteServer = server;
+    remoteError = null;
+  } catch {
+    remotePort = null;
+    remoteError = 'E_PORT';
+  }
+}
+
+function stopRemote() {
+  remoteServer?.close();
+  remoteServer?.closeAllConnections?.();
+  remoteServer = null;
+  remotePort = null;
+}
+
+ipcMain.handle('remote:get', () => remoteInfo());
+ipcMain.handle('remote:set', async (_e, on) => {
+  config.remote = !!on;
+  writeJson(CFG_FILE, config);
+  if (config.remote) await startRemote(); else { stopRemote(); remoteError = null; }
+  return remoteInfo();
+});
+// new pairing code: phones paired with the old QR code can't connect anymore
+ipcMain.handle('remote:reset', () => {
+  config.remoteToken = remote.newToken();
+  writeJson(CFG_FILE, config);
+  return remoteInfo();
+});
+
 // ---------- updates (GitHub releases) ----------
 // Asks GitHub for the latest release; if it's newer, the UI offers to download the installer and
 // install it silently (the installer closes the old version and starts the new one).
-const REPO = 'yigittozdemirr/game-center';
+const REPO = 'yigittozdemirr/game-center'; // GitHub redirects this if the repository is renamed to "ludora"
 let update = null; // { version, notes, url, size }
 let updating = false;
 
@@ -354,15 +458,15 @@ async function checkUpdate() {
   if (!config.checkUpdates) return;
   try {
     const r = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
-      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'GameCenter' },
+      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'Ludora' },
       signal: AbortSignal.timeout(15000),
     });
     if (!r.ok) return;
     const rel = await r.json();
     const version = String(rel.tag_name || '').replace(/^v/, '');
-    const asset = (rel.assets || []).find((a) => /^GameCenter-Setup-[\d.]+\.exe$/.test(a.name));
-    // only installers published on this repository's release page
-    if (!asset || !String(asset.browser_download_url).startsWith(`https://github.com/${REPO}/releases/download/`)) return;
+    const asset = (rel.assets || []).find((a) => /^Ludora-Setup-[\d.]+\.exe$/.test(a.name));
+    // only installers published on this repository's release page (under its old or new name)
+    if (!asset || !/^https:\/\/github\.com\/yigittozdemirr\/(game-center|ludora)\/releases\/download\//.test(asset.browser_download_url)) return;
     if (!md.isNewer(version, app.getVersion())) { update = null; return; }
     update = { version, notes: String(rel.body || '').slice(0, 4000), url: asset.browser_download_url, size: asset.size };
     win?.webContents.send('update:available', update);
@@ -375,7 +479,7 @@ ipcMain.handle('update:install', async () => {
   if (updating) return;
   updating = true;
   try {
-    const file = path.join(app.getPath('temp'), `GameCenter-Setup-${update.version}.exe`);
+    const file = path.join(app.getPath('temp'), `Ludora-Setup-${update.version}.exe`);
     const r = await fetch(update.url, { signal: AbortSignal.timeout(15 * 60000) });
     if (!r.ok || !r.body) throw new Error('E_DOWNLOAD');
     const total = +r.headers.get('content-length') || update.size || 0;
@@ -390,7 +494,7 @@ ipcMain.handle('update:install', async () => {
     await new Promise((res, rej) => out.end((e) => (e ? rej(e) : res())));
     if (update.size && fs.statSync(file).size !== update.size) throw new Error('E_DOWNLOAD'); // incomplete download
     win?.webContents.send('update:progress', 1);
-    // /S: silent, --updated: keep settings/shortcuts as an update, --force-run: start GameCenter again when done
+    // /S: silent, --updated: keep settings/shortcuts as an update, --force-run: start Ludora again when done
     spawn(file, ['/S', '--updated', '--force-run'], { detached: true, stdio: 'ignore' }).on('error', () => {}).unref();
     setTimeout(quitApp, 500);
   } catch (e) {
@@ -451,7 +555,8 @@ ipcMain.handle('game:uninstall', async (_e, key) => {
   throw new Error('E_NOUNINSTALL');
 });
 
-ipcMain.handle('game:update', (_e, key, patch) => {
+ipcMain.handle('game:update', (_e, key, patch) => updateGame(key, patch));
+function updateGame(key, patch) {
   const g = find(key);
   const s = entry(key);
   if ('favorite' in patch) s.favorite = !!patch.favorite;
@@ -469,7 +574,7 @@ ipcMain.handle('game:update', (_e, key, patch) => {
   }
   save();
   return view(g);
-});
+}
 
 // reset=true: back to the default (the platform's own) launch path
 ipcMain.handle('game:setLaunch', async (_e, key, reset) => {
@@ -490,7 +595,8 @@ ipcMain.handle('game:setLaunch', async (_e, key, reset) => {
 });
 
 const newsCache = new Map(); // appId -> { at, items } (30 min)
-ipcMain.handle('steam:news', async (_e, appId) => {
+ipcMain.handle('steam:news', (_e, appId) => steamNews(appId));
+async function steamNews(appId) {
   if (!config.online) return [];
   if (!/^\d{1,10}$/.test(String(appId))) return [];
   const c = newsCache.get(appId);
@@ -498,7 +604,7 @@ ipcMain.handle('steam:news', async (_e, appId) => {
   const items = await md.fetchSteamNews(appId).catch(() => []);
   newsCache.set(appId, { at: Date.now(), items });
   return items;
-});
+}
 
 ipcMain.handle('steam:search', (_e, term) => {
   const q = String(term || '').trim().slice(0, 100);
@@ -581,6 +687,8 @@ ipcMain.handle('config:set', (_e, c) => {
     trayHintShown: config.trayHintShown,
     online: c.online !== false,
     checkUpdates: c.checkUpdates !== false,
+    remote: config.remote, // only changed through remote:set
+    remoteToken: config.remoteToken,
   };
   if (next.shotKey !== config.shotKey && !registerShotKey(next.shotKey)) {
     registerShotKey(config.shotKey);
@@ -721,9 +829,9 @@ function updateTray() {
   const sig = JSON.stringify([config.lang, playing, recent.map((v) => [v.key, v.name, v.running, v.launching])]);
   if (sig === lastTraySig) return;
   lastTraySig = sig;
-  tray.setToolTip(playing.length ? `GameCenter — ${playing.join(', ')}` : 'GameCenter');
+  tray.setToolTip(playing.length ? `Ludora — ${playing.join(', ')}` : 'Ludora');
   tray.setContextMenu(Menu.buildFromTemplate([
-    { label: en ? 'Open GameCenter' : "GameCenter'ı aç", click: showWindow },
+    { label: en ? 'Open Ludora' : "Ludora'yı aç", click: showWindow },
     ...(playing.length ? [{ type: 'separator' }, { label: `${en ? 'Playing' : 'Oynuyor'}: ${playing.join(', ')}`, enabled: false }] : []),
     ...(recent.length ? [
       { type: 'separator' },
@@ -755,11 +863,12 @@ function applyAutostart() {
 
 if (!app.requestSingleInstanceLock()) app.quit();
 app.on('second-instance', showWindow); // opening it again (desktop shortcut etc.) shows the existing window
-app.setAppUserModelId('com.gamecenter.app'); // for Windows notifications and taskbar grouping
+app.setAppUserModelId('com.gamecenter.app'); // kept from the GameCenter days: notifications, taskbar grouping and the autostart entry stay the same
 app.on('before-quit', () => { quitting = true; });
 
 app.whenReady().then(async () => {
   if (!config.lang) config.lang = app.getLocale().toLowerCase().startsWith('tr') ? 'tr' : 'en'; // start in English on non-Turkish Windows
+  if (fromGameCenter && config.autostart) applyAutostart(); // the exe is now Ludora.exe: point the Windows startup entry at it
   const startHidden = process.argv.includes('--hidden'); // start in the tray at Windows startup
   win = new BrowserWindow({
     width: 1440,
@@ -788,7 +897,7 @@ app.whenReady().then(async () => {
       writeJson(CFG_FILE, config);
       const en = config.lang === 'en';
       new Notification({
-        title: en ? 'GameCenter is still running' : 'GameCenter arka planda çalışıyor',
+        title: en ? 'Ludora is still running' : 'Ludora arka planda çalışıyor',
         body: en ? 'Playtime tracking and the screenshot key keep working. Right-click the tray icon to quit.' : 'Süre ölçümü ve ekran görüntüsü tuşu çalışmaya devam ediyor. Kapatmak için tepsideki simgeye sağ tıkla.',
         silent: true,
       }).show();
@@ -807,6 +916,7 @@ app.whenReady().then(async () => {
   syncXbox();
   setInterval(syncXbox, 15 * 60000);
   setTimeout(checkUpdate, 8000);
+  if (config.remote) startRemote();
   setInterval(checkUpdate, 6 * 3600000);
 });
 

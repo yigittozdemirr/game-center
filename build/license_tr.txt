@@ -1,7 +1,7 @@
-﻿GameCenter - lisans ve gizlilik
+﻿Ludora - lisans ve gizlilik
 
 GİZLİLİK
-GameCenter bilgisayarında çalışır. Hesap, kullanım verisi toplama (telemetri) ya da kendine ait bir sunucu yoktur.
+Ludora bilgisayarında çalışır. Hesap, kullanım verisi toplama (telemetri) ya da kendine ait bir sunucu yoktur.
 
 Oyun bilgilerini ve görsellerini göstermek için kurulu oyunlarının adlarını (ve Steam numaralarını) şuralara gönderir:
   - Steam mağazası (store.steampowered.com, api.steampowered.com, steamstatic.com),
@@ -9,18 +9,20 @@ Oyun bilgilerini ve görsellerini göstermek için kurulu oyunlarının adların
   - libretro küçük resim arşivi (thumbnails.libretro.com, sadece emülatör kapakları).
 Seninle ya da bilgisayarınla ilgili başka hiçbir bilgi gönderilmez.
 
-Bunu istediğin zaman kapatabilirsin: Ayarlar > Genel > "Oyun bilgilerini ve görsellerini internetten indir". Kapalıyken GameCenter kendiliğinden hiçbir şey göndermez; oyunlar kendi ikonlarıyla gösterilir.
+Bunu istediğin zaman kapatabilirsin: Ayarlar > Genel > "Oyun bilgilerini ve görsellerini internetten indir". Kapalıyken Ludora kendiliğinden hiçbir şey göndermez; oyunlar kendi ikonlarıyla gösterilir.
 
-GameCenter ayrıca açılışta ve 6 saatte bir GitHub'a (api.github.com) yeni bir GameCenter sürümü olup olmadığını sorar. Sadece bu istek gönderilir; Ayarlar > Genel > "Yeni GameCenter sürümlerini denetle" ile kapatabilirsin.
+Ludora ayrıca açılışta ve 6 saatte bir GitHub'a (api.github.com) yeni bir Ludora sürümü olup olmadığını sorar. Sadece bu istek gönderilir; Ayarlar > Genel > "Yeni Ludora sürümlerini denetle" ile kapatabilirsin.
+
+Telefondan kontrol, Ayarlar'dan sen açana kadar kapalıdır. Açıkken Ludora ev ağında küçük bir web sunucusu çalıştırır (port 47800); sadece QR koddaki eşleşme kodunu bilen cihazlar kullanabilir. İnternet üzerinden hiçbir şey geçmez.
 
 Microsoft / Xbox Live'a sadece sen bir Xbox hesabı bağlarsan bağlanılır. Giriş belirteci bilgisayarında şifreli saklanır ve bağlantıyı kaldırınca silinir.
 
 KURULUMUN YAPTIĞI DEĞİŞİKLİKLER
-  - GameCenter'ı Windows kullanıcın için kurar (varsayılan: %LOCALAPPDATA%\Programs\GameCenter).
+  - Ludora'yı Windows kullanıcın için kurar (varsayılan: %LOCALAPPDATA%\Programs\Ludora).
   - Masaüstü ve Başlat menüsü kısayolları oluşturur.
-  - GameCenter'ı Ayarlar > Uygulamalar listesine ekler; istediğin zaman oradan kaldırabilirsin.
+  - Ludora'yı Ayarlar > Uygulamalar listesine ekler; istediğin zaman oradan kaldırabilirsin.
   - "Windows ile başlat" sen Ayarlar'dan açmadıkça kapalıdır.
-Kütüphanen ve ayarların %APPDATA%\gamecenter, ekran görüntülerin Resimler\GameCenter klasöründe tutulur. Kaldırınca silinmezler.
+Kütüphanen ve ayarların %APPDATA%\Ludora, ekran görüntülerin Resimler\Ludora klasöründe tutulur. Kaldırınca silinmezler.
 
 LİSANS (MIT, İngilizce asıl metin)
 MIT License

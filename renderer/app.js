@@ -13,18 +13,22 @@ const L = {
     play: '▶ Oyna', fav: 'Favori', favOn: 'Favoride', openFolder: 'Klasörü aç', customize: '✎ Özelleştir', back: '← Kütüphane',
     prev: 'Önceki', next: 'Sonraki', playing: 'Şu an açık',
     total: 'Toplam oynama', twoWeeks: 'Son 2 hafta', lastPlayed: 'Son oynama', platform: 'Platform',
-    fromSteam: 'Steam kaydı', measured: 'GameCenter açıkken ölçülür',
+    fromSteam: 'Steam kaydı', measured: 'Ludora açıkken ölçülür',
     news: 'Haberler ve güncellemeler', 'nav.stats': 'İstatistikler', totalPlay: 'Toplam oynama', last7: 'Son 7 gün', gamesCount: 'Oyun', emuGames: '+ {0} emülatör oyunu',
     completedCount: 'Bitirilen', mostPlayed: 'En çok oynananlar', byPlatform: 'Platformlara göre', last14: 'Son 14 gün', noData: 'Henüz oynama verisi yok.',
-    last14Hint: 'GameCenter açıkken ölçülen günlük oynama (Steam oyunları dahil).',
+    last14Hint: 'Ludora açıkken ölçülen günlük oynama (Steam oyunları dahil).',
     status: 'Durum', st_playing: 'Oynuyorum', st_completed: 'Bitirdim', st_backlog: 'Sırada', st_dropped: 'Bıraktım', st_none: 'Durum yok', allStatuses: 'Tüm durumlar',
     collections: 'Koleksiyonlar', addCollection: 'koleksiyon ekle', allCollections: 'Tüm koleksiyonlar',
     gridSize: 'Sıradaki oyun sayısı', perRow: 'Bir sırada {0} oyun',
     randomPick: 'Ne oynasam?', another: 'Başka', openPage: 'Oyun sayfası',
-    set_checkUpdates: "Yeni GameCenter sürümlerini denetle (GitHub)", updateBadge: 'Güncelleme: v{0}', updateTitle: 'GameCenter {0} hazır', updateCurrent: 'Şu an kullandığın sürüm: {0}',
-    updateHint: 'Güncelleme indirilir, kurulur ve GameCenter yeniden açılır. Kütüphanen ve ayarların korunur.', updateNow: 'Şimdi güncelle', later: 'Sonra', installing: 'Kuruluyor…',
+    set_checkUpdates: "Yeni Ludora sürümlerini denetle (GitHub)", updateBadge: 'Güncelleme: v{0}', updateTitle: 'Ludora {0} hazır', updateCurrent: 'Şu an kullandığın sürüm: {0}',
+    updateHint: 'Güncelleme indirilir, kurulur ve Ludora yeniden açılır. Kütüphanen ve ayarların korunur.', updateNow: 'Şimdi güncelle', later: 'Sonra', installing: 'Kuruluyor…',
     E_UPDATE: 'Güncelleme kurulamadı', E_NOUPDATE: 'Yeni sürüm yok',
-    general: 'Genel', set_online: 'Oyun bilgilerini ve görsellerini internetten indir (Steam, Vikipedi, libretro: sadece oyun adları gönderilir)', set_autostart: "Windows açılınca GameCenter'ı başlat (tepside)", set_closeToTray: 'Pencereyi kapatınca arka planda (tepside) çalışmaya devam et', set_trayOnLaunch: "Oyun başlayınca GameCenter'ı tepsiye küçült",
+    phone: 'Telefondan kontrol', phoneOn: 'Telefondan kontrolü aç', phoneOff: 'Açınca telefonundan kütüphaneni görebilir, oyunları bu bilgisayarda başlatabilir ve ekran görüntülerine bakabilirsin. Sadece aynı ev ağındaki ve QR kodu okutan cihazlar bağlanabilir.',
+    phoneHint: 'Telefonun bu bilgisayarla aynı Wi-Fi ağında olmalı. Telefonunun kamerasıyla QR kodu okut. Sayfa açılınca tarayıcı menüsünden "Ana ekrana ekle" dersen uygulama gibi açılır.',
+    phoneFirewall: 'Windows Güvenlik Duvarı sorarsa "Özel ağlar" için izin ver.', phoneChrome: 'Chrome "bağlantı reddedildi" derse: telefonun Ayarlar > Uygulamalar > Chrome > İzinler bölümünde "Yakındaki cihazlar" iznini aç ya da sayfayı Samsung İnternet gibi başka bir tarayıcıda aç.', phoneReset: 'Eşleşmeyi sıfırla', phoneResetDone: 'Yeni QR kodu oluşturuldu. Telefonlar yeniden okutmalı.', phoneAddr: 'Adres',
+    E_PORT: 'Telefon sunucusu başlatılamadı: port kullanımda.', E_NONETWORK: 'Ağ bağlantısı bulunamadı. Bilgisayarı Wi-Fi ya da kabloyla ev ağına bağla.',
+    general: 'Genel', set_online: 'Oyun bilgilerini ve görsellerini internetten indir (Steam, Vikipedi, libretro: sadece oyun adları gönderilir)', set_autostart: "Windows açılınca Ludora'yı başlat (tepside)", set_closeToTray: 'Pencereyi kapatınca arka planda (tepside) çalışmaya devam et', set_trayOnLaunch: "Oyun başlayınca Ludora'yı tepsiye küçült",
     uninstall: 'Kaldır', confirmUninstall: '{0} kaldırılsın mı? {1} kaldırma ekranı açılacak.',
     un_steam: "Steam'in kaldırma penceresi açıldı.", un_xbox: "Windows Ayarlar açıldı: oyunun sayfasında Kaldır'a bas.",
     un_epic: "Epic Games açıldı. Kütüphane'de oyunun ••• menüsünden Kaldır'ı seç (Epic doğrudan kaldırma bağlantısı vermiyor).",
@@ -41,7 +45,7 @@ const L = {
     games: '{0} oyun', game1: '{0} oyun', extra: 'Ek klasörler', optional: '(isteğe bağlı)',
     extraHint: 'Hiçbir platforma bağlı olmayan oyunlar için: bu klasörlerdeki .exe ve kısayollar da eklenir.',
     remove: 'Kaldır', addFolder: '+ Klasör ekle', appearance: 'Görünüm', themeColor: 'Tema rengi', custom: 'Özel',
-    language: 'Dil', playtimeHint: 'Steam dışı oyunların süresi, GameCenter açıkken oyunun çalıştığı süre ölçülerek tutulur.',
+    language: 'Dil', playtimeHint: 'Steam dışı oyunların süresi, Ludora açıkken oyunun çalıştığı süre ölçülerek tutulur.',
     starting: '{0} başlatılıyor…', saved: 'Kaydedildi', downloading: 'İndiriliyor…', updated: 'Güncellendi',
     hidden: 'Gizlendi (Gizlenenler sekmesinden geri alabilirsin)', shown: 'Kütüphanede gösteriliyor',
     found: '{0} oyun bulundu', newGame: 'Yeni oyun: {0}', imgUrl: 'Görsel bağlantısı (https://…)', cancel: 'Vazgeç', ok: 'Tamam',
@@ -51,8 +55,8 @@ const L = {
     fromAccount: 'Hesaptan', connected: 'Bağlı', notConnected: 'Bağlı değil', connect: 'Bağlan', disconnect: 'Bağlantıyı kaldır', syncNow: 'Şimdi eşitle',
     localRead: 'Giriş gerekmez — bilgisayardaki Steam kaydından okunur', lastSync: 'Son eşitleme: {0}', inLibrary: 'Kütüphanede göster',
     xboxHint: 'Xbox girişi için Microsoft\'un ücretsiz Azure portalında oluşturduğun uygulama kimliği (Client ID) gerekir.',
-    clientId: 'Azure Client ID', epicHint: 'Epic, dışarıdan uygulamalara oynama süresi veren resmi bir giriş sunmuyor. Süre GameCenter açıkken ölçülür.',
-    localOnly: 'Giriş yok — kurulu oyunlar bilgisayardan okunur, süre GameCenter ölçer.',
+    clientId: 'Azure Client ID', epicHint: 'Epic, dışarıdan uygulamalara oynama süresi veren resmi bir giriş sunmuyor. Süre Ludora açıkken ölçülür.',
+    localOnly: 'Giriş yok — kurulu oyunlar bilgisayardan okunur, süre Ludora ölçer.',
     E_XBOX_AUTH: 'Xbox girişi başarısız', E_XBOX_NOPROFILE: 'Bu Microsoft hesabının Xbox profili yok', E_XBOX_CHILD: 'Çocuk hesabı: aile ayarlarından izin gerekli',
     E_CLIENTID: 'Geçerli bir Azure Client ID gir', E_LOGIN_CANCEL: 'Giriş iptal edildi', E_HOTKEY: 'Bu tuş kullanılamıyor (başka bir uygulama almış olabilir)',
     E_EMU_MISSING: 'Emülatör programı bulunamadı', E_SHOT: 'Ekran görüntüsü alınamadı',
@@ -69,10 +73,10 @@ const L = {
     az0: 'Kişisel Microsoft hesabıyla doğrudan uygulama kaydı artık açılmıyor ("dizin dışında uygulama oluşturma kullanım dışı" uyarısı). Önce <b>ücretsiz Azure hesabı</b> aç; bu sana bir dizin verir. Kimlik doğrulaması için telefon ve kart ister, ama ücretli plana kendin geçmedikçe para çekilmez:',
     az1: 'Sonra Azure portalındaki uygulama kayıtlarına gir:',
     az2: 'Açılan "App registrations" sayfasında <b>New registration</b>\'a bas.',
-    az3: 'Name: <b>GameCenter</b> yaz. "Supported account types" bölümünde <b>Personal Microsoft accounts only</b> seç.',
+    az3: 'Name: <b>Ludora</b> yaz. "Supported account types" bölümünde <b>Personal Microsoft accounts only</b> seç.',
     az4: 'Redirect URI kısmında platform olarak <b>Public client/native (mobile &amp; desktop)</b> seç ve şu adresi yapıştır:',
     az5: '<b>Register</b>\'a bas. Açılan sayfadaki <b>Application (client) ID</b> değerini kopyala, buradaki kutuya yapıştır ve <b>Bağlan</b>\'a bas.',
-    azNote: 'Uygulama kaydı ücretsizdir ve bir kez yapılır. Bu kimlik gizli değildir; arkadaşın aynı ID ile kendi Xbox hesabına girebilir, onun Azure hesabı açmasına gerek yok. Kart vermek istemezsen Xbox girişi şart değil: GameCenter oynama süresini kendisi ölçmeye devam eder.',
+    azNote: 'Uygulama kaydı ücretsizdir ve bir kez yapılır. Bu kimlik gizli değildir; arkadaşın aynı ID ile kendi Xbox hesabına girebilir, onun Azure hesabı açmasına gerek yok. Kart vermek istemezsen Xbox girişi şart değil: Ludora oynama süresini kendisi ölçmeye devam eder.',
   },
   en: {
     'nav.all': 'Library', 'nav.fav': 'Favorites', 'nav.recent': 'Recently Played', 'nav.hidden': 'Hidden', 'nav.settings': 'Settings',
@@ -83,18 +87,22 @@ const L = {
     play: '▶ Play', fav: 'Favorite', favOn: 'Favorited', openFolder: 'Open folder', customize: '✎ Customize', back: '← Library',
     prev: 'Previous', next: 'Next', playing: 'Running now',
     total: 'Total playtime', twoWeeks: 'Last 2 weeks', lastPlayed: 'Last played', platform: 'Platform',
-    fromSteam: 'Steam record', measured: 'Measured while GameCenter runs',
+    fromSteam: 'Steam record', measured: 'Measured while Ludora runs',
     news: 'News and updates', 'nav.stats': 'Statistics', totalPlay: 'Total playtime', last7: 'Last 7 days', gamesCount: 'Games', emuGames: '+ {0} emulator games',
     completedCount: 'Completed', mostPlayed: 'Most played', byPlatform: 'By platform', last14: 'Last 14 days', noData: 'No playtime data yet.',
-    last14Hint: 'Daily playtime measured while GameCenter runs (Steam games included).',
+    last14Hint: 'Daily playtime measured while Ludora runs (Steam games included).',
     status: 'Status', st_playing: 'Playing', st_completed: 'Completed', st_backlog: 'Backlog', st_dropped: 'Dropped', st_none: 'No status', allStatuses: 'All statuses',
     collections: 'Collections', addCollection: 'add collection', allCollections: 'All collections',
     gridSize: 'Games per row', perRow: '{0} games per row',
     randomPick: 'What should I play?', another: 'Another', openPage: 'Game page',
-    set_checkUpdates: 'Check for new GameCenter versions (GitHub)', updateBadge: 'Update: v{0}', updateTitle: 'GameCenter {0} is available', updateCurrent: 'You are on version {0}',
-    updateHint: 'The update is downloaded and installed, then GameCenter restarts. Your library and settings are kept.', updateNow: 'Update now', later: 'Later', installing: 'Installing…',
+    set_checkUpdates: 'Check for new Ludora versions (GitHub)', updateBadge: 'Update: v{0}', updateTitle: 'Ludora {0} is available', updateCurrent: 'You are on version {0}',
+    updateHint: 'The update is downloaded and installed, then Ludora restarts. Your library and settings are kept.', updateNow: 'Update now', later: 'Later', installing: 'Installing…',
     E_UPDATE: 'Could not install the update', E_NOUPDATE: 'No new version',
-    general: 'General', set_online: 'Download game info and artwork from the internet (Steam, Wikipedia, libretro: only game names are sent)', set_autostart: 'Start GameCenter with Windows (in the tray)', set_closeToTray: 'Keep running in the tray when the window is closed', set_trayOnLaunch: 'Minimize GameCenter to the tray when a game starts',
+    phone: 'Phone remote', phoneOn: 'Control Ludora from your phone', phoneOff: 'Browse your library, start games on this PC and look at your screenshots from your phone. Only devices on your home network that scanned the QR code can connect.',
+    phoneHint: 'Your phone must be on the same Wi-Fi as this PC. Scan the QR code with your phone camera. Once the page opens, choose "Add to Home screen" in the browser menu to open it like an app.',
+    phoneFirewall: 'If Windows Firewall asks, allow access on private networks.', phoneChrome: 'If Chrome says "connection refused", allow "Nearby devices" for Chrome in the Settings app of your phone (Apps > Chrome > Permissions), or open the page in another browser.', phoneReset: 'Reset pairing', phoneResetDone: 'New QR code created. Phones need to scan it again.', phoneAddr: 'Address',
+    E_PORT: 'Could not start the phone server: the port is in use.', E_NONETWORK: 'No network found. Connect this PC to your home network by Wi-Fi or cable.',
+    general: 'General', set_online: 'Download game info and artwork from the internet (Steam, Wikipedia, libretro: only game names are sent)', set_autostart: 'Start Ludora with Windows (in the tray)', set_closeToTray: 'Keep running in the tray when the window is closed', set_trayOnLaunch: 'Minimize Ludora to the tray when a game starts',
     uninstall: 'Uninstall', confirmUninstall: 'Uninstall {0}? The {1} uninstall screen will open.',
     un_steam: "Steam's uninstall window opened.", un_xbox: "Windows Settings opened: click Uninstall on the game's page.",
     un_epic: "Epic Games opened. In Library, pick Uninstall from the game's ••• menu (Epic offers no direct uninstall link).",
@@ -111,7 +119,7 @@ const L = {
     games: '{0} games', game1: '{0} game', extra: 'Extra folders', optional: '(optional)',
     extraHint: 'For games without a platform: .exe files and shortcuts in these folders are added too.',
     remove: 'Remove', addFolder: '+ Add folder', appearance: 'Appearance', themeColor: 'Theme color', custom: 'Custom',
-    language: 'Language', playtimeHint: 'For non-Steam games, playtime is measured while GameCenter is running.',
+    language: 'Language', playtimeHint: 'For non-Steam games, playtime is measured while Ludora is running.',
     starting: 'Starting {0}…', saved: 'Saved', downloading: 'Downloading…', updated: 'Updated',
     hidden: 'Hidden (undo from the Hidden tab)', shown: 'Shown in library',
     found: '{0} games found', newGame: 'New game: {0}', imgUrl: 'Image link (https://…)', cancel: 'Cancel', ok: 'OK',
@@ -121,8 +129,8 @@ const L = {
     fromAccount: 'From account', connected: 'Connected', notConnected: 'Not connected', connect: 'Connect', disconnect: 'Disconnect', syncNow: 'Sync now',
     localRead: 'No sign-in needed — read from Steam\'s files on this PC', lastSync: 'Last sync: {0}', inLibrary: 'Show in library',
     xboxHint: 'Xbox sign-in needs an app ID (Client ID) you create for free in Microsoft\'s Azure portal.',
-    clientId: 'Azure Client ID', epicHint: 'Epic offers no official sign-in that gives playtime to third-party apps. Playtime is measured while GameCenter runs.',
-    localOnly: 'No sign-in — installed games are read from this PC, GameCenter measures playtime.',
+    clientId: 'Azure Client ID', epicHint: 'Epic offers no official sign-in that gives playtime to third-party apps. Playtime is measured while Ludora runs.',
+    localOnly: 'No sign-in — installed games are read from this PC, Ludora measures playtime.',
     E_XBOX_AUTH: 'Xbox sign-in failed', E_XBOX_NOPROFILE: 'This Microsoft account has no Xbox profile', E_XBOX_CHILD: 'Child account: needs permission in family settings',
     E_CLIENTID: 'Enter a valid Azure Client ID', E_LOGIN_CANCEL: 'Sign-in cancelled', E_HOTKEY: 'This key can\'t be used (another app may own it)',
     E_EMU_MISSING: 'Emulator program not found', E_SHOT: 'Could not take screenshot',
@@ -139,10 +147,10 @@ const L = {
     az0: 'Personal Microsoft accounts can no longer register apps directly (the "creating applications outside of a directory has been deprecated" warning). First open a <b>free Azure account</b>, which gives you a directory. It asks for a phone and card to verify your identity, but nothing is charged unless you upgrade to a paid plan yourself:',
     az1: 'Then open App registrations in the Azure portal:',
     az2: 'On the "App registrations" page, click <b>New registration</b>.',
-    az3: 'Name: <b>GameCenter</b>. Under "Supported account types" choose <b>Personal Microsoft accounts only</b>.',
+    az3: 'Name: <b>Ludora</b>. Under "Supported account types" choose <b>Personal Microsoft accounts only</b>.',
     az4: 'Under Redirect URI pick <b>Public client/native (mobile &amp; desktop)</b> and paste this address:',
     az5: 'Click <b>Register</b>. Copy the <b>Application (client) ID</b> shown, paste it into the box here and click <b>Connect</b>.',
-    azNote: 'Registering the app is free and done once. The ID isn\'t a secret; a friend can sign in to their own Xbox account with the same ID without making an Azure account. If you\'d rather not give a card, Xbox sign-in is optional: GameCenter keeps measuring playtime itself.',
+    azNote: 'Registering the app is free and done once. The ID isn\'t a secret; a friend can sign in to their own Xbox account with the same ID without making an Azure account. If you\'d rather not give a card, Xbox sign-in is optional: Ludora keeps measuring playtime itself.',
   },
 };
 let lang = 'tr';
@@ -600,6 +608,10 @@ function renderSettings() {
       ${[['online', true], ['checkUpdates', true], ['autostart', false], ['closeToTray', true], ['trayOnLaunch', true]].map(([k, def]) => `<label class="check"><input type="checkbox" data-setting="${k}"${(cfg[k] ?? def) ? ' checked' : ''}> ${t('set_' + k)}</label>`).join('')}
     </section>
     <section>
+      <h3>${t('phone')}</h3>
+      ${remoteBlock()}
+    </section>
+    <section>
       <h3>${t('shots')}</h3>
       <div class="set-row"><span>${t('shotKey')}</span>
         <button class="keycap${S.capturing ? ' wait' : ''}" data-hotkey>${S.capturing ? t('pressKey') : esc(cfg.shotKey)}</button>
@@ -615,6 +627,26 @@ function renderSettings() {
       <button class="btn-glass" data-folder-add>${t('addFolder')}</button>
     </section>
   </div>`;
+}
+
+// Phone remote: on/off, the QR code with the pairing link, and a reset for the pairing code
+function remoteBlock() {
+  const r = S.remote;
+  if (r === undefined) { S.remote = null; gc.getRemote().then((x) => { S.remote = x; if (S.nav === 'settings') render(); }); }
+  if (!r) return '';
+  const toggle = `<label class="check"><input type="checkbox" id="remote-on"${r.on ? ' checked' : ''}> ${t('phoneOn')}</label>`;
+  const err = r.error ? `<p class="remote-err">${t(r.error)}</p>` : '';
+  if (!r.on) return `${toggle}${err}<p class="muted">${t('phoneOff')}</p>`;
+  return `${toggle}${err}${r.qr ? `<div class="remote">
+    <div class="qr">${r.qr}</div>
+    <div class="remote-info">
+      <p>${t('phoneHint')}</p>
+      <p class="muted">${t('phoneAddr')}: <code>${esc(r.urls[0].split('#')[0])}</code></p>
+      <p class="muted">${t('phoneFirewall')}</p>
+      <p class="muted">${t('phoneChrome')}</p>
+      <button class="btn-glass" data-remote-reset>${t('phoneReset')}</button>
+    </div>
+  </div>` : ''}`;
 }
 
 function renderPlatforms() {
@@ -919,6 +951,7 @@ document.addEventListener('click', async (e) => {
   if (d.shotDel) return deleteShot(d.shotDel);
   if (d.shotFilter !== undefined) return go(() => { S.shotFilter = d.shotFilter || null; render(); });
   if (d.shotGoto) return go(() => { S.nav = 'shots'; S.detail = null; S.shotFilter = d.shotGoto; render(); view.scrollTop = 0; });
+  if ('remoteReset' in d) { S.remote = await safe(gc.resetRemote)() || S.remote; toast(t('phoneResetDone')); return render(); }
   if ('xboxInfo' in d) return xboxInfo();  if ('shotOpen' in d) return safe(gc.revealShot)(null);
   if ('shotDir' in d) { S.cfg = await gc.pickShotDir(); S.shots = null; loadShots(); return; }
   if ('hotkey' in d) { S.capturing = true; return render(); }
@@ -1022,6 +1055,7 @@ document.addEventListener('change', (e) => {
   if (e.target.id === 'd-status') safe(async () => refresh(await gc.update(S.detail, { status: e.target.value })))();
   if (e.target.id === 'accent-custom') saveConfig({ accent: e.target.value });
   if (e.target.dataset.setting) saveConfig({ [e.target.dataset.setting]: e.target.checked });
+  if (e.target.id === 'remote-on') safe(async () => { S.remote = await gc.setRemote(e.target.checked); render(); })();
   if (e.target.dataset.platform) {
     const off = [...document.querySelectorAll('[data-platform]')].filter((x) => !x.checked).map((x) => x.dataset.platform);
     saveConfig({ off });
@@ -1095,7 +1129,7 @@ function shutterSound() {
 gc.onShot(() => { shutterSound(); loadShots(); });
 // ---------- updates ----------
 // A new version on GitHub shows a small badge next to the language switch; clicking it opens the release notes
-// and an "Update now" button that downloads the installer and restarts GameCenter on the new version.
+// and an "Update now" button that downloads the installer and restarts Ludora on the new version.
 let pendingUpdate = null;
 function showUpdate(u) {
   pendingUpdate = u;
