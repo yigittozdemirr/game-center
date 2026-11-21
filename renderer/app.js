@@ -10,10 +10,10 @@ const L = {
     'title.all': 'Tüm oyunlar', 'title.fav': 'Favoriler', 'title.recent': 'Son oynananlar', 'title.hidden': 'Gizlenen oyunlar',
     all: 'Tümü', allCompanies: 'Tüm şirketler', sortName: 'A → Z', sortRecent: 'Son oynanan', sortMost: 'En çok oynanan',
     noMatch: 'Bu filtreye uyan oyun yok.', searching: 'Oyunlar aranıyor…', never: 'Hiç oynanmadı', played: '{0} oynandı',
-    play: '▶ Oyna', fav: 'Favori', favOn: 'Favoride', openFolder: 'Klasörü aç', customize: '✎ Özelleştir', back: '← Kütüphane',
+    play: '▶ Oyna', fav: 'Favori', favOn: 'Favoride', openFolder: 'Klasörü aç', showInSteam: "Steam'de göster", openApp: 'Uygulamayı aç', customize: '✎ Özelleştir', back: '← Kütüphane',
     prev: 'Önceki', next: 'Sonraki', playing: 'Şu an açık',
     total: 'Toplam oynama', twoWeeks: 'Son 2 hafta', lastPlayed: 'Son oynama', platform: 'Platform',
-    fromSteam: 'Steam kaydı', measured: 'Ludora açıkken ölçülür',
+    fromSteam: 'Steam kaydı', fromSteamOnline: 'Steam hesabından', measured: 'Ludora açıkken ölçülür',
     news: 'Haberler ve güncellemeler', 'nav.stats': 'İstatistikler', totalPlay: 'Toplam oynama', last7: 'Son 7 gün', gamesCount: 'Oyun', emuGames: '+ {0} emülatör oyunu',
     completedCount: 'Bitirilen', mostPlayed: 'En çok oynananlar', byPlatform: 'Platformlara göre', last14: 'Son 14 gün', noData: 'Henüz oynama verisi yok.',
     last14Hint: 'Ludora açıkken ölçülen günlük oynama (Steam oyunları dahil).',
@@ -55,6 +55,14 @@ const L = {
     fromAccount: 'Hesaptan', connected: 'Bağlı', notConnected: 'Bağlı değil', connect: 'Bağlan', disconnect: 'Bağlantıyı kaldır', syncNow: 'Şimdi eşitle',
     localRead: 'Giriş gerekmez — bilgisayardaki Steam kaydından okunur', lastSync: 'Son eşitleme: {0}', inLibrary: 'Kütüphanede göster',
     xboxHint: 'Xbox girişi için Microsoft\'un ücretsiz Azure portalında oluşturduğun uygulama kimliği (Client ID) gerekir.',
+    steamKey: 'Steam Web API anahtarı', steamApiHint: 'İsteğe bağlı: Steam Web API anahtarını eklersen süreler doğrudan Steam hesabından gelir. Steam bilgisayardaki kaydı geç güncellediği için süreler bazen Steam uygulamasından geride kalabilir.',
+    steamApiOn: 'Süreler Steam hesabından', steamHowTo: 'Anahtar nasıl alınır?', steamHowToTitle: 'Steam Web API anahtarı alma (bir kerelik)',
+    sk1: 'Steam hesabınla giriş yapıp anahtar sayfasını aç:', sk2: '"Domain Name" alanına <b>localhost</b> yaz, koşulları kabul et ve <b>Register</b>’a bas. Steam telefonundan onay isteyebilir.',
+    sk3: 'Çıkan <b>Key</b> değerini kopyala, Ludora’da Steam kartındaki alana yapıştır ve <b>Bağlan</b>’a bas.',
+    sk4: 'Steam profilinde <b>Gizlilik Ayarları > Oyun ayrıntıları</b> "Herkese açık" olmalı; yoksa Steam süreleri vermez.',
+    skNote: 'Anahtar bilgisayarında Windows şifrelemesiyle saklanır ve sadece Steam’e (api.steampowered.com) gönderilir. Steam’e en az 5$ harcamamış hesaplar anahtar alamayabilir.',
+    E_STEAM_KEY: 'Steam anahtarı geçersiz. 32 karakterlik anahtarı tam kopyaladığından emin ol.', E_STEAM_PRIVATE: 'Steam süreleri vermedi: profilinde "Oyun ayrıntıları" herkese açık olmalı.',
+    E_STEAM_API: "Steam'e ulaşılamadı, daha sonra yeniden denenecek.", E_STEAM_NOUSER: 'Bu bilgisayarda giriş yapılmış bir Steam hesabı bulunamadı.',
     clientId: 'Azure Client ID', epicHint: 'Epic, dışarıdan uygulamalara oynama süresi veren resmi bir giriş sunmuyor. Süre Ludora açıkken ölçülür.',
     localOnly: 'Giriş yok — kurulu oyunlar bilgisayardan okunur, süre Ludora ölçer.',
     E_XBOX_AUTH: 'Xbox girişi başarısız', E_XBOX_NOPROFILE: 'Bu Microsoft hesabının Xbox profili yok', E_XBOX_CHILD: 'Çocuk hesabı: aile ayarlarından izin gerekli',
@@ -84,10 +92,10 @@ const L = {
     'title.all': 'All games', 'title.fav': 'Favorites', 'title.recent': 'Recently played', 'title.hidden': 'Hidden games',
     all: 'All', allCompanies: 'All companies', sortName: 'A → Z', sortRecent: 'Recently played', sortMost: 'Most played',
     noMatch: 'No games match this filter.', searching: 'Looking for games…', never: 'Never played', played: '{0} played',
-    play: '▶ Play', fav: 'Favorite', favOn: 'Favorited', openFolder: 'Open folder', customize: '✎ Customize', back: '← Library',
+    play: '▶ Play', fav: 'Favorite', favOn: 'Favorited', openFolder: 'Open folder', showInSteam: 'Show in Steam', openApp: 'Open app', customize: '✎ Customize', back: '← Library',
     prev: 'Previous', next: 'Next', playing: 'Running now',
     total: 'Total playtime', twoWeeks: 'Last 2 weeks', lastPlayed: 'Last played', platform: 'Platform',
-    fromSteam: 'Steam record', measured: 'Measured while Ludora runs',
+    fromSteam: 'Steam record', fromSteamOnline: 'From your Steam account', measured: 'Measured while Ludora runs',
     news: 'News and updates', 'nav.stats': 'Statistics', totalPlay: 'Total playtime', last7: 'Last 7 days', gamesCount: 'Games', emuGames: '+ {0} emulator games',
     completedCount: 'Completed', mostPlayed: 'Most played', byPlatform: 'By platform', last14: 'Last 14 days', noData: 'No playtime data yet.',
     last14Hint: 'Daily playtime measured while Ludora runs (Steam games included).',
@@ -129,6 +137,14 @@ const L = {
     fromAccount: 'From account', connected: 'Connected', notConnected: 'Not connected', connect: 'Connect', disconnect: 'Disconnect', syncNow: 'Sync now',
     localRead: 'No sign-in needed — read from Steam\'s files on this PC', lastSync: 'Last sync: {0}', inLibrary: 'Show in library',
     xboxHint: 'Xbox sign-in needs an app ID (Client ID) you create for free in Microsoft\'s Azure portal.',
+    steamKey: 'Steam Web API key', steamApiHint: 'Optional: add a Steam Web API key and playtimes come straight from your Steam account. Steam updates the file on this PC late, so playtimes can otherwise lag behind the Steam app.',
+    steamApiOn: 'Playtimes from your Steam account', steamHowTo: 'How do I get a key?', steamHowToTitle: 'Getting a Steam Web API key (one-time)',
+    sk1: 'Sign in with your Steam account and open the key page:', sk2: 'Enter <b>localhost</b> as "Domain Name", accept the terms and click <b>Register</b>. Steam may ask you to confirm on your phone.',
+    sk3: 'Copy the <b>Key</b>, paste it into the Steam card in Ludora and click <b>Connect</b>.',
+    sk4: 'In your Steam profile, <b>Privacy Settings > Game details</b> must be "Public", otherwise Steam doesn’t share playtimes.',
+    skNote: 'The key is stored on this PC with Windows encryption and only sent to Steam (api.steampowered.com). Accounts that haven’t spent $5 on Steam may not be able to get a key.',
+    E_STEAM_KEY: 'The Steam key is not valid. Make sure you copied the whole 32-character key.', E_STEAM_PRIVATE: 'Steam didn’t share playtimes: "Game details" must be public in your profile.',
+    E_STEAM_API: "Couldn't reach Steam, Ludora will try again later.", E_STEAM_NOUSER: 'No signed-in Steam account found on this PC.',
     clientId: 'Azure Client ID', epicHint: 'Epic offers no official sign-in that gives playtime to third-party apps. Playtime is measured while Ludora runs.',
     localOnly: 'No sign-in — installed games are read from this PC, Ludora measures playtime.',
     E_XBOX_AUTH: 'Xbox sign-in failed', E_XBOX_NOPROFILE: 'This Microsoft account has no Xbox profile', E_XBOX_CHILD: 'Child account: needs permission in family settings',
@@ -494,7 +510,7 @@ function renderDetail() {
   if (!g) { S.detail = null; return renderHome(); }
   setAmbient(g);
   const row = (k, v) => (v ? `<div class="row"><span>${t(k)}</span><b>${esc(v)}</b></div>` : '');
-  const how = { steam: t('fromSteam'), account: t('fromAccount'), tracked: t('measured') }[g.timeSource];
+  const how = { steam: t('fromSteam'), steamOnline: t('fromSteamOnline'), account: t('fromAccount'), tracked: t('measured') }[g.timeSource];
   const shots = (S.shots || []).find((x) => x.folder === g.shotFolder)?.files || [];
   view.innerHTML = `<div class="detail" style="${colorVars(g)}">
     <div class="d-hero">
@@ -508,6 +524,7 @@ function renderDetail() {
         <div class="d-actions">
           ${playBtn(g, 'btn-play big')}
           <button class="btn-glass${g.favorite ? ' on' : ''}" data-fav="${esc(g.key)}">★ ${g.favorite ? t('favOn') : t('fav')}</button>
+          ${g.source === 'steam' && g.steamAppId ? `<button class="btn-glass" data-steam-show="${esc(g.key)}">${t('showInSteam')}</button>` : ''}
           <button class="btn-glass" data-folder="${esc(g.key)}">${t('openFolder')}</button>
           ${g.source === 'emu' ? '' : `<button class="btn-glass danger" data-uninstall="${esc(g.key)}">${t('uninstall')}</button>`}
           <button class="btn-glass" data-edit>${t('customize')}</button>
@@ -656,7 +673,13 @@ function renderPlatforms() {
   const n = (src) => S.games.filter((g) => g.source === src).length;
   const pill = (on, label) => `<span class="pill${on ? ' on' : ''}">${label}</span>`;
   const body = {
-    steam: () => `${pill(!!a.steam.name, a.steam.name ? `${t('connected')} · ${esc(a.steam.name)}` : t('notConnected'))}<p class="muted">${t('localRead')}</p>`,
+    steam: () => `${pill(!!a.steam.name, a.steam.name ? `${t('connected')} · ${esc(a.steam.name)}` : t('notConnected'))}<p class="muted">${t('localRead')}</p>
+      ${a.steam.api
+        ? `${pill(!a.steam.api.error, a.steam.api.error ? t(a.steam.api.error) : t('steamApiOn'))}<p class="muted">${a.steam.api.synced ? t('lastSync', ago(a.steam.api.synced)) : ''}</p>
+           <div class="p-actions"><button class="btn-glass" data-sync>${t('syncNow')}</button><button class="btn-glass danger" data-disconnect="steam">${t('disconnect')}</button></div>`
+        : `<p class="muted">${t('steamApiHint')}</p>
+           <div class="p-actions"><input id="steam-key" placeholder="${t('steamKey')}" spellcheck="false" autocomplete="off"><button class="btn-play" data-connect="steam">${t('connect')}</button></div>
+           <button class="info-link" data-steam-info>ⓘ ${t('steamHowTo')}</button>`}`,
     xbox: () => (a.xbox
       ? `${pill(!a.xbox.error, a.xbox.error ? t(a.xbox.error) : `${t('connected')} · ${esc(a.xbox.name)}`)}
          <p class="muted">${a.xbox.synced ? t('lastSync', ago(a.xbox.synced)) : ''}</p>
@@ -673,7 +696,10 @@ function renderPlatforms() {
     <div class="p-grid">${PLATFORMS.map((p) => `<section class="p-card">
       <div class="p-head"><h3>${SOURCE[p]}</h3><span class="muted">${t(n(p) === 1 ? 'game1' : 'games', n(p))}</span></div>
       ${(body[p] || other)()}
-      <label class="check"><input type="checkbox" data-platform="${p}"${S.cfg.off.includes(p) ? '' : ' checked'}> ${t('inLibrary')}</label>
+      <div class="p-foot">
+        <label class="check"><input type="checkbox" data-platform="${p}"${S.cfg.off.includes(p) ? '' : ' checked'}> ${t('inLibrary')}</label>
+        ${(a.launchers || []).includes(p) ? `<button class="btn-glass" data-platform-open="${p}">${t('openApp')}</button>` : ''}
+      </div>
     </section>`).join('')}</div>
   </div>`;
 }
@@ -768,6 +794,34 @@ function xboxInfo() {
       <li>${t('az5')}</li>
     </ol>
     <p class="muted">${t('azNote')}</p>
+    <div class="info-actions"><button class="btn-glass" data-close>${t('close')}</button></div>
+  </div>`;
+  const close = () => { d.remove(); document.removeEventListener('keydown', esc_, true); };
+  const esc_ = (e) => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+  d.addEventListener('click', (e) => {
+    if (e.target.closest('a')) return; // the link opens in the browser
+    e.stopPropagation();
+    if (e.target === d || e.target.closest('[data-close]')) return close();
+    const c = e.target.closest('[data-copy]');
+    if (c) safe(gc.copyText)(c.dataset.copy).then(() => toast(t('copied')));
+  });
+  document.addEventListener('keydown', esc_, true);
+  document.body.append(d);
+}
+
+// How to get a Steam Web API key (same dialog as the Xbox one)
+function steamInfo() {
+  const d = document.createElement('div');
+  d.className = 'modal';
+  d.innerHTML = `<div class="info-box">
+    <h3>${t('steamHowToTitle')}</h3>
+    <ol>
+      <li>${t('sk1')} <a href="https://steamcommunity.com/dev/apikey" target="_blank">steamcommunity.com/dev/apikey ↗</a></li>
+      <li>${t('sk2')}</li>
+      <li>${t('sk3')}</li>
+      <li>${t('sk4')} <a href="https://steamcommunity.com/my/edit/settings" target="_blank">steamcommunity.com/my/edit/settings ↗</a></li>
+    </ol>
+    <p class="muted">${t('skNote')}</p>
     <div class="info-actions"><button class="btn-glass" data-close>${t('close')}</button></div>
   </div>`;
   const close = () => { d.remove(); document.removeEventListener('keydown', esc_, true); };
@@ -952,11 +1006,12 @@ document.addEventListener('click', async (e) => {
   if (d.shotFilter !== undefined) return go(() => { S.shotFilter = d.shotFilter || null; render(); });
   if (d.shotGoto) return go(() => { S.nav = 'shots'; S.detail = null; S.shotFilter = d.shotGoto; render(); view.scrollTop = 0; });
   if ('remoteReset' in d) { S.remote = await safe(gc.resetRemote)() || S.remote; toast(t('phoneResetDone')); return render(); }
+  if ('steamInfo' in d) return steamInfo();
   if ('xboxInfo' in d) return xboxInfo();  if ('shotOpen' in d) return safe(gc.revealShot)(null);
   if ('shotDir' in d) { S.cfg = await gc.pickShotDir(); S.shots = null; loadShots(); return; }
   if ('hotkey' in d) { S.capturing = true; return render(); }
   if (d.connect) {
-    const n = await safe(gc.connect)(d.connect, { clientId: $('#xbox-client')?.value });
+    const n = await safe(gc.connect)(d.connect, { clientId: $('#xbox-client')?.value, key: $('#steam-key')?.value });
     if (n) { S.accounts = n; toast(t('connected')); S.games = await gc.getLibrary(); render(); }
     return;
   }
@@ -985,6 +1040,8 @@ document.addEventListener('click', async (e) => {
   if (d.feature) return act.feature(+d.feature);
   if (d.genre !== undefined) return go(() => { S.genre = d.genre; render(); });
   if (d.folder) return safe(gc.openFolder)(d.folder);
+  if (d.steamShow) return safe(gc.showInSteam)(d.steamShow);
+  if (d.platformOpen) return safe(gc.openPlatform)(d.platformOpen);
   if ('edit' in d) { S.editing = !S.editing; render(); if (S.editing) $('#edit').scrollIntoView({ behavior: 'smooth' }); return; }
   const key = S.detail;
   if ('launchPick' in d) return refresh(await safe(gc.setLaunch)(key, false));

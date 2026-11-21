@@ -15,6 +15,8 @@ Ludora ayrıca açılışta ve 6 saatte bir GitHub'a (api.github.com) yeni bir L
 
 Telefondan kontrol, Ayarlar'dan sen açana kadar kapalıdır. Açıkken Ludora ev ağında küçük bir web sunucusu çalıştırır (port 47800); sadece QR koddaki eşleşme kodunu bilen cihazlar kullanabilir. İnternet üzerinden hiçbir şey geçmez.
 
+Steam Web API'ye (api.steampowered.com) oynama sürelerin için sadece sen kendi Steam Web API anahtarını eklersen sorulur. Anahtar bilgisayarında şifreli saklanır ve bağlantıyı kaldırınca silinir.
+
 Microsoft / Xbox Live'a sadece sen bir Xbox hesabı bağlarsan bağlanılır. Giriş belirteci bilgisayarında şifreli saklanır ve bağlantıyı kaldırınca silinir.
 
 KURULUMUN YAPTIĞI DEĞİŞİKLİKLER

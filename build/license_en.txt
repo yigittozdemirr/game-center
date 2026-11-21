@@ -15,6 +15,8 @@ Ludora also asks GitHub (api.github.com) whether a newer Ludora version exists, 
 
 The phone remote is off until you turn it on in Settings. When it's on, Ludora runs a small web server on your home network (port 47800) that only devices with the QR code's pairing code can use. Nothing goes through the internet.
 
+The Steam Web API (api.steampowered.com) is asked for your playtimes only if you add your own Steam Web API key. The key is stored encrypted on your PC and deleted when you disconnect.
+
 Microsoft / Xbox Live is contacted only if you connect an Xbox account yourself. Its sign-in token is stored encrypted on your PC and deleted when you disconnect.
 
 WHAT THE INSTALLER CHANGES

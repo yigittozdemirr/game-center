@@ -216,4 +216,20 @@ function isNewer(a, b) {
   return false;
 }
 
-module.exports = { isNewer, WIKI_HEADERS, fetchSteamNews, findSteamId, searchSteam, fetchWikiDetails, fetchSteamDetails, fetchSteamImages, download, palette };
+// Optional, with the user's own Steam Web API key: playtimes from Steam's servers, which are newer than
+// localconfig.vdf (Steam writes that file late). Needs "Game details" set to public in the Steam profile.
+// Errors never include the URL, so the key can't end up in a log.
+async function fetchSteamPlaytimes(key, steamId) {
+  const url = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${encodeURIComponent(key)}&steamid=${encodeURIComponent(steamId)}&include_played_free_games=1&format=json`;
+  let r;
+  try { r = await fetch(url, { signal: AbortSignal.timeout(15000) }); } catch { throw new Error('E_STEAM_API'); }
+  if (r.status === 401 || r.status === 403) throw new Error('E_STEAM_KEY');
+  if (!r.ok) throw new Error('E_STEAM_API');
+  const res = (await r.json().catch(() => ({}))).response || {};
+  if (!res.games && !res.game_count) throw new Error('E_STEAM_PRIVATE'); // private profiles get an empty response
+  return (res.games || []).map((g) => ({
+    appId: String(g.appid), playtime: g.playtime_forever || 0, playtime2wks: g.playtime_2weeks || 0, lastPlayed: (g.rtime_last_played || 0) * 1000,
+  }));
+}
+
+module.exports = { fetchSteamPlaytimes, isNewer, WIKI_HEADERS, fetchSteamNews, findSteamId, searchSteam, fetchWikiDetails, fetchSteamDetails, fetchSteamImages, download, palette };

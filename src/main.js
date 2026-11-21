@@ -99,11 +99,11 @@ function view(g) {
     // playtime source: Steam file > connected account (Xbox) > Ludora tracking.
     // Steam games use Steam's numbers only: Steam counts them even when started from a custom launch path.
     lastPlayed: Math.max(s.lastPlayed || 0, g.lastPlayed || 0, ps?.lastPlayed || 0),
-    playtime: g.source === 'steam' ? g.playtime || 0 : ps ? Math.max(ps.playtime, tracked) : tracked,
+    playtime: g.source === 'steam' ? Math.max(g.playtime || 0, ps?.playtime || 0) : ps ? Math.max(ps.playtime, tracked) : tracked,
     // the daily log is only for the stats chart, so it isn't counted twice for Steam games
-    playtime2wks: g.source === 'steam' ? g.playtime2wks || 0 : tracker.minutesSince(s.days, Date.now() - 13 * 864e5),
+    playtime2wks: g.source === 'steam' ? (ps ? ps.playtime2wks : g.playtime2wks || 0) : tracker.minutesSince(s.days, Date.now() - 13 * 864e5),
     days: s.days || {},
-    timeSource: g.source === 'steam' ? 'steam' : ps ? 'account' : 'tracked',
+    timeSource: g.source === 'steam' ? (ps ? 'steamOnline' : 'steam') : ps ? 'account' : 'tracked',
     running: running.has(g.key),
     launching: !running.has(g.key) && (launching.get(g.key) || 0) > Date.now(),
     images: { hero: img('hero'), cover: img('cover'), logo: img('logo'), icon: img('icon') },
@@ -261,6 +261,8 @@ function tick(names) {
     if (win && !win.isDestroyed() && !win.isVisible()) showWindow();
     hiddenFor = null;
   } else if (hiddenFor && expired.includes(hiddenFor)) hiddenFor = null;
+  // a Steam game just closed: Steam's servers have its new playtime a little later
+  if (acc.steamKey && [...running].some((k) => k.startsWith('steam:') && !nowRunning.has(k))) setTimeout(syncSteam, 90000);
   running = nowRunning;
   if (changed.size) { save(); scanned.filter((g) => changed.has(g.key)).forEach(push); }
   updateTray();
@@ -289,10 +291,24 @@ function startTracker() {
 
 // ---------- accounts (Xbox) ----------
 let steamName = null; // no Steam sign-in needed: the account name comes from the local loginusers.vdf
+let steamId = null; // SteamID64 of that account, for the optional Web API
 const accountView = () => ({
-  steam: { name: steamName },
+  steam: { name: steamName, api: acc.steamKey ? { error: acc.steamApi?.error || null, synced: acc.steamApi?.synced || 0 } : null },
   xbox: acc.xbox ? { name: acc.xbox.gamertag, error: acc.xbox.error || null, synced: acc.xbox.synced || 0 } : null,
   xboxClientId: acc.xboxClientId || '',
+  launchers: ['steam', 'epic', 'xbox', 'ea', 'ubisoft', 'gog'].filter((p) => (p === 'ea' ? eaExe : launcherLink(p))), // platforms whose app is installed
+});
+
+// Links that open each platform's app; one is offered only if Windows has an app registered for it.
+// EA's link only launches games (it shows an error without one), so the EA app is started by its exe.
+const LAUNCHER_LINKS = { steam: ['steam://open/main'], epic: ['com.epicgames.launcher://'], xbox: ['msxbox://'], ubisoft: ['uplay://'], gog: ['goggalaxy://'] };
+const launcherLink = (p) => (LAUNCHER_LINKS[p] || []).find((u) => app.getApplicationNameForProtocol(u));
+let eaExe = null; // read from the registry at startup
+ipcMain.handle('platform:open', async (_e, p) => {
+  if (p === 'ea' && eaExe) { const err = await shell.openPath(eaExe); if (err) throw new Error(err); return; }
+  const u = launcherLink(p);
+  if (!u) throw new Error('E_NOTFOUND');
+  return shell.openExternal(u);
 });
 
 async function syncXbox() {
@@ -309,6 +325,23 @@ async function syncXbox() {
   } catch (e) {
     acc.xbox.error = e.message;
     console.warn('Xbox sync failed:', e.message, e.detail || '');
+  }
+  accounts.saveAccounts(ACC_FILE, acc);
+  pushAll();
+}
+
+// Optional Steam Web API key: playtimes from Steam's servers (localconfig.vdf lags behind)
+async function syncSteam() {
+  if (!acc.steamKey || !steamId) return;
+  acc.steamApi ||= {};
+  try {
+    const list = await md.fetchSteamPlaytimes(acc.steamKey, steamId);
+    for (const k of Object.keys(store.platformStats)) if (k.startsWith('steam:')) delete store.platformStats[k];
+    for (const x of list) store.platformStats[`steam:${x.appId}`] = { playtime: x.playtime, playtime2wks: x.playtime2wks, lastPlayed: x.lastPlayed };
+    acc.steamApi = { error: null, synced: Date.now() };
+    save();
+  } catch (e) {
+    acc.steamApi.error = /^E_[A-Z_]+$/.test(e.message) ? e.message : 'E_STEAM_API';
   }
   accounts.saveAccounts(ACC_FILE, acc);
   pushAll();
@@ -662,6 +695,13 @@ ipcMain.handle('game:setImage', async (_e, key, kind, url) => {
   return view(g);
 });
 
+// Opens the game's page in the Steam library
+ipcMain.handle('game:showInSteam', (_e, key) => {
+  const id = String(view(find(key)).steamAppId || '');
+  if (find(key).source !== 'steam' || !/^\d{1,10}$/.test(id)) throw new Error('E_NOTFOUND');
+  return shell.openExternal(`steam://nav/games/details/${id}`);
+});
+
 ipcMain.handle('game:openFolder', (_e, key) => {
   const g = find(key);
   if (g.rom) return shell.showItemInFolder(g.rom);
@@ -745,6 +785,15 @@ ipcMain.handle('shots:pickDir', async () => {
 // ---------- IPC: platform accounts ----------
 ipcMain.handle('accounts:get', () => accountView());
 ipcMain.handle('accounts:connect', async (_e, id, opts = {}) => {
+  if (id === 'steam') {
+    const key = String(opts.key || '').trim();
+    if (!/^[0-9A-F]{32}$/i.test(key)) throw new Error('E_STEAM_KEY');
+    if (!steamId) throw new Error('E_STEAM_NOUSER');
+    await md.fetchSteamPlaytimes(key, steamId); // check the key and the profile before saving it
+    acc.steamKey = key;
+    await syncSteam();
+    return accountView();
+  }
   if (id !== 'xbox') throw new Error('E_NOTFOUND');
   const clientId = String(opts.clientId || acc.xboxClientId || '').trim();
   acc.xbox = await accounts.xboxLogin(win, clientId);
@@ -754,15 +803,15 @@ ipcMain.handle('accounts:connect', async (_e, id, opts = {}) => {
   return accountView();
 });
 ipcMain.handle('accounts:disconnect', (_e, id) => {
-  if (id !== 'xbox') throw new Error('E_NOTFOUND');
-  delete acc.xbox;
-  for (const k of Object.keys(store.platformStats)) if (k.startsWith('xbox:')) delete store.platformStats[k];
+  if (id !== 'xbox' && id !== 'steam') throw new Error('E_NOTFOUND');
+  if (id === 'xbox') delete acc.xbox; else { delete acc.steamKey; delete acc.steamApi; }
+  for (const k of Object.keys(store.platformStats)) if (k.startsWith(`${id}:`)) delete store.platformStats[k];
   accounts.saveAccounts(ACC_FILE, acc);
   save();
   pushAll();
   return accountView();
 });
-ipcMain.handle('accounts:sync', async () => { await syncXbox(); return accountView(); });
+ipcMain.handle('accounts:sync', async () => { await Promise.all([syncXbox(), syncSteam()]); return accountView(); });
 
 // ---------- IPC: emulators ----------
 const pickedExes = new Set(); // the UI can only save exes picked in a file dialog
@@ -912,7 +961,12 @@ app.whenReady().then(async () => {
   setInterval(scan, 180000); // also scanned on focus; rarely in the background
   startTracker();
   if (!registerShotKey(config.shotKey)) console.warn('Could not register screenshot key:', config.shotKey);
-  steamName = scanner.steamAccount(await scanner.findSteamPath());
+  const sa = scanner.steamAccount(await scanner.findSteamPath());
+  steamName = sa?.name || null;
+  steamId = sa?.id || null;
+  scanner.eaAppPath().then((p) => { eaExe = p; });
+  syncSteam();
+  setInterval(syncSteam, 10 * 60000);
   syncXbox();
   setInterval(syncXbox, 15 * 60000);
   setTimeout(checkUpdate, 8000);

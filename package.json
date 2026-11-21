@@ -1,7 +1,7 @@
 {
   "name": "ludora",
   "productName": "Ludora",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Windows game launcher that gathers Steam, Epic, Xbox, EA, Ubisoft, GOG and emulator games into one library",
   "author": "yigittozdemirr",
   "main": "src/main.js",

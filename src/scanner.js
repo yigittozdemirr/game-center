@@ -41,6 +41,13 @@ function run(cmd, args) {
 
 // ---------- Steam ----------
 // Steam install folder (from the registry, Unicode: paths with non-ASCII characters are read correctly)
+// EA app: its link (link2ea://) only launches games and shows an error without one, so the app is opened by its exe
+async function eaAppPath() {
+  const key = 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Electronic Arts\\EA Desktop';
+  const v = (await regExport(key))[key] || {};
+  return [v.LauncherAppPath, v.ClientPath].find((p) => p && /\.exe$/i.test(p) && fs.existsSync(p)) || null;
+}
+
 async function findSteamPath() {
   const key = 'HKEY_CURRENT_USER\\Software\\Valve\\Steam';
   const p = (await regExport(key))[key]?.SteamPath;
@@ -74,9 +81,9 @@ function steamStats(steamPath) {
 // Shown as the "connected account" on the Platforms page (no Steam sign-in needed, read from a local file)
 function steamAccount(steamPath) {
   const users = parseVdf(readSafe(path.join(steamPath, 'config', 'loginusers.vdf')) || '').users || {};
-  const list = Object.values(users);
-  const u = list.find((x) => pick(x, 'MostRecent') === '1') || list[0];
-  return u ? pick(u, 'PersonaName') : null;
+  const list = Object.entries(users);
+  const [id, u] = list.find(([, x]) => pick(x, 'MostRecent') === '1') || list[0] || [];
+  return u ? { name: pick(u, 'PersonaName'), id: /^\d{17}$/.test(id) ? id : null } : null; // id: SteamID64, for the optional Web API
 }
 
 function scanSteam(steamPath) {
@@ -343,4 +350,4 @@ async function scanAll({ folders = [], off = [] }, readLink) {
 // (e.g. Fortnite.url) would bring the same game back as a "shortcut".
 const hideOff = (games, off) => games.filter((g) => !off.includes(g.key.split(':')[0]));
 
-module.exports = { parseReg, xboxFromPackages, parseVdf, norm, findSteamPath, steamAccount, scanSteam, steamStats, scanEpic, fromLaunchers, scanFolder, merge, hideOff, scanAll, readUninstallEntries, matchUninstall, findUninstallerExe };
+module.exports = { eaAppPath, parseReg, xboxFromPackages, parseVdf, norm, findSteamPath, steamAccount, scanSteam, steamStats, scanEpic, fromLaunchers, scanFolder, merge, hideOff, scanAll, readUninstallEntries, matchUninstall, findUninstallerExe };

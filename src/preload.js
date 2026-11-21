@@ -15,6 +15,8 @@ contextBridge.exposeInMainWorld('gc', {
   steamNews: call('steam:news'),
   setSteamId: call('game:setSteamId'),
   openFolder: call('game:openFolder'),
+  showInSteam: call('game:showInSteam'),
+  openPlatform: call('platform:open'),
   getConfig: call('config:get'),
   setConfig: call('config:set'),
   pickFolder: call('dialog:folder'),

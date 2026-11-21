@@ -32,7 +32,7 @@
 - Wrong match? Use **Search Steam** to pick the right game, or set your own banner, cover and logo.
 
 **Playtime that actually means something**
-- Steam playtime is read from Steam itself. Xbox playtime comes from Xbox Live when you connect your account.
+- Steam playtime is read from Steam itself; add your own Steam Web API key on the **Platforms** page to get it straight from your Steam account, always up to date. Xbox playtime comes from Xbox Live when you connect your account.
 - Everything else is measured while Ludora runs.
 - "● Playing" shows while a game is running, and the same game can't be launched twice by accident.
 - A **Statistics** page shows total hours, most played games, playtime per platform and the last 14 days.
@@ -80,7 +80,7 @@ This removes the app and its shortcuts. Your library, settings (`%APPDATA%\Ludor
 
 | Platform | How it works |
 |---|---|
-| Steam | Read from Steam's own files. Playtime and your account name come straight from Steam, with no sign-in needed. |
+| Steam | Read from Steam's own files. Playtime and your account name come straight from Steam, with no sign-in needed. Steam writes that file late, so for always-current playtime add a free Steam Web API key (optional). |
 | Epic Games | Read from Epic's install manifests. Epic offers no official way for other apps to read playtime, so Ludora measures it. |
 | Xbox / Game Pass | Read from Windows' app packages. Connect your Microsoft account on the **Platforms** page for real Xbox playtime (optional). |
 | EA app, Ubisoft Connect, GOG | Read from Windows' registry. Ludora measures playtime. |
@@ -113,6 +113,8 @@ No other information about you or your PC is sent. You can switch this off any t
 Ludora also asks GitHub (`api.github.com`) whether a newer version exists, at start and every 6 hours. When there is one, a small **Update** badge appears in the top bar; one click downloads the installer from this repository's Releases page, installs it and restarts the app. Turn the check off in **Settings → General → Check for new Ludora versions**.
 
 The **phone remote** is off until you turn it on. When it's on, Ludora runs a small web server on your home network (port 47800). Only devices that scanned the QR code, which holds a random pairing code, can read your library or start games; **Reset pairing** disconnects them. Nothing goes through the internet.
+
+The Steam Web API (`api.steampowered.com`) is asked for your playtimes only if you add your own Steam Web API key. The key is stored encrypted on your PC and deleted when you disconnect.
 
 Microsoft / Xbox Live is contacted only if you connect an Xbox account yourself. The sign-in token is stored encrypted on your PC and deleted when you disconnect.
 

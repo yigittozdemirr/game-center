@@ -560,3 +560,6 @@ nav button, .nav-bottom > button { padding: 11px 14px; }
 .remote-info p { margin: 0 0 10px; line-height: 1.5; }
 .remote-info code { user-select: all; }
 .remote-err { color: #ff8a8a; margin: 8px 0 0; }
+
+/* platform card footer: library toggle + open the platform's app */
+.p-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; }
